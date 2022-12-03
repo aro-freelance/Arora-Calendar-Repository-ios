@@ -18,6 +18,11 @@
 		382DD9AD293BC7EF004D385B /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382DD9AC293BC7EF004D385B /* Category.swift */; };
 		382DD9AF293BC810004D385B /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382DD9AE293BC810004D385B /* Task.swift */; };
 		382DD9B1293BC8FD004D385B /* DayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382DD9B0293BC8FD004D385B /* DayViewController.swift */; };
+		382DD9B4293BCBCA004D385B /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9B3293BCBCA004D385B /* RealmSwift */; };
+		382DD9B7293BCD8A004D385B /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9B6293BCD8A004D385B /* FirebaseAnalyticsSwift */; };
+		382DD9B9293BCD8A004D385B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9B8293BCD8A004D385B /* FirebaseAuth */; };
+		382DD9BB293BCD8A004D385B /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9BA293BCD8A004D385B /* FirebaseFirestoreSwift */; };
+		382DD9BD293BCD8A004D385B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9BC293BCD8A004D385B /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +46,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				382DD9B7293BCD8A004D385B /* FirebaseAnalyticsSwift in Frameworks */,
+				382DD9B9293BCD8A004D385B /* FirebaseAuth in Frameworks */,
+				382DD9B4293BCBCA004D385B /* RealmSwift in Frameworks */,
+				382DD9BD293BCD8A004D385B /* FirebaseStorage in Frameworks */,
+				382DD9BB293BCD8A004D385B /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +132,13 @@
 			dependencies = (
 			);
 			name = AroraCalendar;
+			packageProductDependencies = (
+				382DD9B3293BCBCA004D385B /* RealmSwift */,
+				382DD9B6293BCD8A004D385B /* FirebaseAnalyticsSwift */,
+				382DD9B8293BCD8A004D385B /* FirebaseAuth */,
+				382DD9BA293BCD8A004D385B /* FirebaseFirestoreSwift */,
+				382DD9BC293BCD8A004D385B /* FirebaseStorage */,
+			);
 			productName = AroraCalendar;
 			productReference = 382DD98D293BBDB8004D385B /* AroraCalendar.app */;
 			productType = "com.apple.product-type.application";
@@ -150,6 +167,10 @@
 				Base,
 			);
 			mainGroup = 382DD984293BBDB8004D385B;
+			packageReferences = (
+				382DD9B2293BCBCA004D385B /* XCRemoteSwiftPackageReference "realm-swift" */,
+				382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 382DD98E293BBDB8004D385B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -402,6 +423,53 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		382DD9B2293BCBCA004D385B /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		382DD9B3293BCBCA004D385B /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 382DD9B2293BCBCA004D385B /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		382DD9B6293BCD8A004D385B /* FirebaseAnalyticsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsSwift;
+		};
+		382DD9B8293BCD8A004D385B /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		382DD9BA293BCD8A004D385B /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		382DD9BC293BCD8A004D385B /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 382DD9B5293BCD8A004D385B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 382DD985293BBDB8004D385B /* Project object */;
 }
