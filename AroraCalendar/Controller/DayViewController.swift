@@ -269,7 +269,17 @@ class DayViewController: UIViewController {
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
-        //TODO: go to WriteNoteVC and send task with due date = to the current date clicked. and isEdit = false.
+        let task = Task()
+        task.dueDate = dateClicked
+        
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let secondVc = storyboard.instantiateViewController(withIdentifier: "WriteNoteViewController") as! WriteNoteViewController
+        
+        secondVc.isEdit = false
+        secondVc.task = task
+        
+        secondVc.modalPresentationStyle = .fullScreen
+        self.show(secondVc, sender: true)
         
     }
 

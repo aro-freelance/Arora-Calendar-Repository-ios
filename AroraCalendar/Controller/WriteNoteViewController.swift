@@ -35,6 +35,19 @@ class WriteNoteViewController: UIViewController {
     
     @IBOutlet weak var priorityPicker: UIPickerView!
     
+    @IBOutlet weak var image: UIImageView!
+    
+    @IBOutlet weak var imageButton: UIButton!
+    
+    @IBOutlet weak var redSlider: UISlider!
+    
+    @IBOutlet weak var blueSlider: UISlider!
+    
+    @IBOutlet weak var greenSlider: UISlider!
+    
+    @IBOutlet weak var colorPreviewImageView: UIImageView!
+    
+    
     
     var dueDate : Date = Date()
     var now = Date()
@@ -59,8 +72,8 @@ class WriteNoteViewController: UIViewController {
     var redValue : Int = 0
     var blueValue : Int = 0
     var greenValue : Int = 0
-    var colorARGB : Int = 0
-    var textColorARGB : Int = 0
+    var colorARGB : UIColor?
+    var textColorARGB : UIColor?
     
     var task = Task()
     var taskToUpdate = Task()
@@ -113,9 +126,9 @@ class WriteNoteViewController: UIViewController {
     }
     
     
-    //TODO: add photo button method here
-    
- 
+    @IBAction func photoButtonPressed(_ sender: UIButton) {
+        
+    }
     
     
     @IBAction func newCategoryButtonPressed(_ sender: UIButton) {
@@ -190,6 +203,39 @@ class WriteNoteViewController: UIViewController {
     }
     
     
+    @IBAction func redSliderValueChanges(_ sender: UISlider) {
+        
+        redValue = sender.hashValue
+        
+        updateColor()
+        
+    }
+    
+    @IBAction func blueSliderValueChanged(_ sender: UISlider) {
+        
+        blueValue = sender.hashValue
+        
+        updateColor()
+        
+    }
+    
+    
+    @IBAction func greenSliderValueChanged(_ sender: UISlider) {
+        
+        greenValue = sender.hashValue
+        
+        updateColor()
+        
+    }
+    
+    //TODO: fix this.. it is not updating the color properly
+    func updateColor(){
+        colorARGB = UIColor(red: CGFloat(redValue/255), green: CGFloat(greenValue/255), blue: CGFloat(blueValue/255), alpha: 1)
+        
+        colorPreviewImageView.backgroundColor = colorARGB
+    }
+    
+    
     //TODO: spinner methods
     
     
@@ -198,3 +244,5 @@ class WriteNoteViewController: UIViewController {
 
 
 }
+
+

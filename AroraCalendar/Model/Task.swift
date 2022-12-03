@@ -12,8 +12,6 @@ class Task : Object {
     
     @objc dynamic var taskString : String = ""
     
-    //save this as a string and convert it back later
-    @objc dynamic var priorityString : String = "LOW"
     
     @objc dynamic var category : String = ""
     
