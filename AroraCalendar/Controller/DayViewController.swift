@@ -26,12 +26,45 @@ import UIKit
  */
 
 class DayViewController: UIViewController {
+    
+    
+    @IBOutlet weak var categoryPicker: UIPickerView!
+    
+    @IBOutlet weak var bgImage: UIImageView!
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet weak var dayTitleLabel: UILabel!
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
     }
     
-
+    
+    @IBAction func calendarButtonPressed(_ sender: UIBarButtonItem) {
+        
+    }
+    
+    
+    @IBAction func todayButtonPressed(_ sender: UIBarButtonItem) {
+        
+        
+    }
+    
+    
+    @IBAction func changeBackgroundView(_ sender: UIBarButtonItem) {
+        
+        
+    }
+    
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        
+    }
+    
 
 }

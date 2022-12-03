@@ -15,10 +15,36 @@ import UIKit
 
 class WriteNoteViewController: UIViewController {
     
-
+    
+    @IBOutlet weak var datePicker: UIDatePicker!
+    
+    @IBOutlet weak var noteText: UITextView!
+    
+    @IBOutlet weak var categoryPicker: UIPickerView!
+    
+    @IBOutlet weak var newCategoryText: UITextField!
+    
+    @IBOutlet weak var newCategoryButton: UIButton!
+    
+    @IBOutlet weak var priorityPicker: UIPickerView!
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
+    }
+    
+    
+    @IBAction func newCategoryButtonPressed(_ sender: UIButton) {
+        
+        
+    }
+    
+    
+    @IBAction func saveButtonPressed(_ sender: UIButton) {
+        
         
     }
     
