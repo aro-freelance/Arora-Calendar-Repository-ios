@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 
-class Calendar{
+class Calendar: Object{
     
     
     @objc dynamic var date : Date = Date()

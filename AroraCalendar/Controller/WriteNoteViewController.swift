@@ -6,6 +6,13 @@
 //
 
 import UIKit
+import RealmSwift
+
+import FirebaseAuth
+import FirebaseFirestoreSwift
+import Firebase
+import FirebaseStorage
+import FirebaseFirestore
 
 /*
  
@@ -29,6 +36,37 @@ class WriteNoteViewController: UIViewController {
     @IBOutlet weak var priorityPicker: UIPickerView!
     
     
+    var dueDate : Date = Date()
+    var now = Date()
+    var clickedDate : Date = Date()
+    
+    var isEdit = false
+    
+    var categoryString : String = ""
+    
+    var categories = [Category]()
+    
+    var imageUri = ""
+    var imagePicker = UIImagePickerController()
+    
+    var colorString = ""
+    
+    
+    //TODO: add sliders, labels, and imageview to the UI and use them to set color on an imageview/ save that color. and checkbox to change text color white/black
+    
+    //TODO: add imageview and add image button to UI
+    
+    var redValue : Int = 0
+    var blueValue : Int = 0
+    var greenValue : Int = 0
+    var colorARGB : Int = 0
+    var textColorARGB : Int = 0
+    
+    var task = Task()
+    var taskToUpdate = Task()
+    var tempTask = Task()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,17 +74,125 @@ class WriteNoteViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        //TODO: setup color UI
+        
+        setUIOnLoad()
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        reset()
+        
+    }
+    
+    func clearData(){
+        
+        //TODO: implement
+        
+    }
+    
+    func setUIOnLoad(){
+        
+        //TODO: implement
+        
+    }
+    
+    
+    
+    
+    //TODO: checkbox clicked method here
+    
+    
+    func getCategories(_ categoryList : [Category]){
+        
+        //TODO: implement
+        
+    }
+    
+    
+    //TODO: add photo button method here
+    
+ 
+    
     
     @IBAction func newCategoryButtonPressed(_ sender: UIButton) {
         
+        //if we have user input
+        if let userCategoryInput = newCategoryText.text?.trimmingCharacters(in: .whitespacesAndNewlines){
+            if(!userCategoryInput.isEmpty){
+                
+                print("user category input obtained")
+                
+                //make a category from it
+                var newCategory = Category()
+                newCategory.categoryName = userCategoryInput
+                //add it to the list
+                categories.append(newCategory)
+                
+                //update the category picker
+                categoryPicker.reloadAllComponents()
+               
+                //show newest catgory on the picker
+                categoryPicker.selectRow(categories.count - 1, inComponent: 0, animated: true)
+                
+                //set the category string to the user input
+                categoryString = userCategoryInput
+                
+                //reset the edit text
+                newCategoryText.text = ""
+            
+            }
+            //we obtained an empty string from the user
+            else{
+                print("empty category string submitted")
+                
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Empty Category cannot be submitted.", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                    
+                }))
+                
+                self.present(alert, animated: true, completion: nil)
+                
+            }
+        }
+        
+        //make the button for submitting categories invisible again
+        newCategoryButton.isHidden = true
         
     }
+    
+    
     
     
     @IBAction func saveButtonPressed(_ sender: UIButton) {
         
+        //TODO: implement
         
     }
+    
+    func tempSave(){
+        
+        //TODO: implement
+        
+    }
+    
+    func reset(){
+        
+        noteText.text = ""
+        
+        clearData()
+        
+    }
+    
+    
+    //TODO: spinner methods
+    
+    
     
 
 

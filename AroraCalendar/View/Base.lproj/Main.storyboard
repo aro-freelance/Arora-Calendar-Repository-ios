@@ -158,15 +158,15 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="M48-aX-ghe">
                                 <rect key="frame" x="16" y="217" width="361" height="601"/>
                             </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="O0f-eq-r6f">
-                                <rect key="frame" x="24" y="230" width="345" height="577"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="O0f-eq-r6f">
+                                <rect key="frame" x="24" y="230" width="343" height="548"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="226" id="nTH-ft-Ebg">
-                                        <rect key="frame" x="0.0" y="50" width="345" height="226"/>
+                                        <rect key="frame" x="0.0" y="50" width="343" height="226"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nTH-ft-Ebg" id="oNq-Ml-z3x">
-                                            <rect key="frame" x="0.0" y="0.0" width="345" height="226"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="226"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -181,6 +181,14 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Vn-9q-w72">
+                                <rect key="frame" x="16" y="786" width="361" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Delete Category"/>
+                                <connections>
+                                    <action selector="deleteCategoryButtonPressed:" destination="c8r-wR-Vwl" eventType="touchUpInside" id="lXI-Uq-nGf"/>
+                                </connections>
+                            </button>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fbd-ob-wdB">
                                 <rect key="frame" x="50" y="161" width="293" height="48"/>
                                 <constraints>
@@ -196,9 +204,12 @@
                             <constraint firstItem="M48-aX-ghe" firstAttribute="top" secondItem="fbd-ob-wdB" secondAttribute="bottom" constant="8" id="DeS-LV-dGr"/>
                             <constraint firstItem="M48-aX-ghe" firstAttribute="centerX" secondItem="O0f-eq-r6f" secondAttribute="centerX" id="Lh9-3d-6v7"/>
                             <constraint firstItem="VQ4-xB-IW9" firstAttribute="trailing" secondItem="M48-aX-ghe" secondAttribute="trailing" id="M1u-fU-j64"/>
+                            <constraint firstItem="4Vn-9q-w72" firstAttribute="leading" secondItem="M48-aX-ghe" secondAttribute="leading" id="Q0v-di-BXS"/>
                             <constraint firstItem="VQ4-xB-IW9" firstAttribute="centerX" secondItem="fbd-ob-wdB" secondAttribute="centerX" id="SKY-ge-yk4"/>
                             <constraint firstItem="fbd-ob-wdB" firstAttribute="top" secondItem="VQ4-xB-IW9" secondAttribute="bottom" constant="8" id="Tyc-JV-IFu"/>
+                            <constraint firstItem="4Vn-9q-w72" firstAttribute="top" secondItem="O0f-eq-r6f" secondAttribute="bottom" constant="8" id="UQD-A8-wLr"/>
                             <constraint firstItem="O0f-eq-r6f" firstAttribute="top" secondItem="fbd-ob-wdB" secondAttribute="bottom" constant="21" id="Uta-5I-Bil"/>
+                            <constraint firstItem="4Vn-9q-w72" firstAttribute="trailing" secondItem="M48-aX-ghe" secondAttribute="trailing" id="aFp-sl-DUN"/>
                             <constraint firstItem="VQ4-xB-IW9" firstAttribute="top" secondItem="dbO-4v-tg9" secondAttribute="top" id="fNj-Oc-L81"/>
                             <constraint firstItem="VQ4-xB-IW9" firstAttribute="leading" secondItem="ALi-qd-kaW" secondAttribute="leadingMargin" id="fva-Cl-Cyt"/>
                             <constraint firstItem="O0f-eq-r6f" firstAttribute="leading" secondItem="dbO-4v-tg9" secondAttribute="leading" constant="24" id="gNm-ca-pNY"/>
@@ -239,6 +250,7 @@
                         <outlet property="bgImage" destination="M48-aX-ghe" id="WPu-8Y-9fi"/>
                         <outlet property="categoryPicker" destination="fbd-ob-wdB" id="1Gj-IH-SE5"/>
                         <outlet property="dayTitleLabel" destination="VQ4-xB-IW9" id="UPd-OT-gWs"/>
+                        <outlet property="deleteCatButton" destination="4Vn-9q-w72" id="Yxx-Yz-uPn"/>
                         <outlet property="tableView" destination="O0f-eq-r6f" id="wrg-ht-Z6z"/>
                     </connections>
                 </viewController>
