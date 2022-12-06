@@ -373,7 +373,7 @@
                                     <action selector="photoButtonPressed:" destination="Opx-ne-rII" eventType="touchUpInside" id="LjS-6f-GWK"/>
                                 </connections>
                             </button>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="xwO-BK-K8X">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="xwO-BK-K8X">
                                 <rect key="frame" x="14" y="644" width="229" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="29" id="i3Q-L9-GiV"/>
@@ -383,7 +383,7 @@
                                     <action selector="redSliderValueChanges:" destination="Opx-ne-rII" eventType="valueChanged" id="VE0-f4-T3L"/>
                                 </connections>
                             </slider>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Fnc-nJ-o4E">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="Fnc-nJ-o4E">
                                 <rect key="frame" x="14" y="681" width="229" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="29" id="lZQ-LE-nAN"/>
@@ -393,7 +393,7 @@
                                     <action selector="blueSliderValueChanged:" destination="Opx-ne-rII" eventType="valueChanged" id="nnB-Xg-dqB"/>
                                 </connections>
                             </slider>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="RRV-BZ-kxD">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="255" translatesAutoresizingMaskIntoConstraints="NO" id="RRV-BZ-kxD">
                                 <rect key="frame" x="14" y="718" width="229" height="30"/>
                                 <color key="thumbTintColor" systemColor="systemGreenColor"/>
                                 <connections>

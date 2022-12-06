@@ -64,14 +64,9 @@ class WriteNoteViewController: UIViewController {
     
     var colorString = ""
     
-    
-    //TODO: add sliders, labels, and imageview to the UI and use them to set color on an imageview/ save that color. and checkbox to change text color white/black
-    
-    //TODO: add imageview and add image button to UI
-    
-    var redValue : Int = 0
-    var blueValue : Int = 0
-    var greenValue : Int = 0
+    var redValue : Float = 0
+    var blueValue : Float = 0
+    var greenValue : Float = 0
     var colorARGB : UIColor?
     var textColorARGB : UIColor?
     
@@ -89,7 +84,9 @@ class WriteNoteViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
-        //TODO: setup color UI
+        //TODO: setup color UI (color box = stored color)
+        
+        
         
         setUIOnLoad()
         
@@ -116,7 +113,7 @@ class WriteNoteViewController: UIViewController {
     
     
     
-    //TODO: checkbox clicked method here
+    //TODO: checkbox clicked method here. the checkbox isn't currently in the UI... if we add it, the purpose of it will be to change the textcolor from black (unchecked) to white (checked)
     
     
     func getCategories(_ categoryList : [Category]){
@@ -205,7 +202,7 @@ class WriteNoteViewController: UIViewController {
     
     @IBAction func redSliderValueChanges(_ sender: UISlider) {
         
-        redValue = sender.hashValue
+        redValue = sender.value
         
         updateColor()
         
@@ -213,7 +210,7 @@ class WriteNoteViewController: UIViewController {
     
     @IBAction func blueSliderValueChanged(_ sender: UISlider) {
         
-        blueValue = sender.hashValue
+        blueValue = sender.value
         
         updateColor()
         
@@ -222,14 +219,16 @@ class WriteNoteViewController: UIViewController {
     
     @IBAction func greenSliderValueChanged(_ sender: UISlider) {
         
-        greenValue = sender.hashValue
+        greenValue = sender.value
         
         updateColor()
         
     }
     
-    //TODO: fix this.. it is not updating the color properly
     func updateColor(){
+        
+        print("red : \(redValue). blue : \(blueValue). green : \(greenValue)")
+        
         colorARGB = UIColor(red: CGFloat(redValue/255), green: CGFloat(greenValue/255), blue: CGFloat(blueValue/255), alpha: 1)
         
         colorPreviewImageView.backgroundColor = colorARGB
