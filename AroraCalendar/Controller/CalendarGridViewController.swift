@@ -37,8 +37,8 @@ class CalendarGridViewController: UIViewController {
     
     var isInitialLoad = true
     
-    var calendarList : Results<Calendar>?
-    var monthList = [Calendar]()
+    var calendarList : Results<MyCalendar>?
+    var monthList = [MyCalendar]()
     var taskList : Results<Task>?
     var datesWithNotification = [Date]()
     

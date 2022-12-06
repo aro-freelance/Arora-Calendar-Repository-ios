@@ -168,13 +168,67 @@
                                 <rect key="frame" x="24" y="230" width="343" height="505"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="226" id="nTH-ft-Ebg">
-                                        <rect key="frame" x="0.0" y="50" width="343" height="226"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="336" id="nTH-ft-Ebg" customClass="TaskCell" customModule="AroraCalendar" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="343" height="336"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nTH-ft-Ebg" id="oNq-Ml-z3x">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="226"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="336"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test description" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1fd-Bd-lAx">
+                                                    <rect key="frame" x="71" y="11" width="252" height="55"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ORr-jS-56d">
+                                                    <rect key="frame" x="20" y="11" width="43" height="35"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="43" id="OZM-FT-nYU"/>
+                                                    </constraints>
+                                                    <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="circle" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="taskCellButtonPressed:" destination="Kz5-gm-CYa" eventType="touchUpInside" id="iYw-rI-fvt"/>
+                                                    </connections>
+                                                </button>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="l85-KR-2pE">
+                                                    <rect key="frame" x="20" y="130" width="303" height="195"/>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fri, Nov 11" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0zH-69-UIx">
+                                                    <rect key="frame" x="20" y="74" width="290" height="48"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="48" id="2XQ-ml-aJi"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailingMargin" secondItem="0zH-69-UIx" secondAttribute="trailing" constant="13" id="1cA-Yb-SBB"/>
+                                                <constraint firstItem="1fd-Bd-lAx" firstAttribute="trailing" secondItem="oNq-Ml-z3x" secondAttribute="trailingMargin" id="6pr-0m-hRx"/>
+                                                <constraint firstItem="l85-KR-2pE" firstAttribute="top" secondItem="0zH-69-UIx" secondAttribute="bottom" constant="8" id="80a-4R-Rqd"/>
+                                                <constraint firstItem="0zH-69-UIx" firstAttribute="top" secondItem="1fd-Bd-lAx" secondAttribute="bottom" constant="8" id="87e-Ym-uzs"/>
+                                                <constraint firstItem="1fd-Bd-lAx" firstAttribute="leading" secondItem="ORr-jS-56d" secondAttribute="trailing" constant="8" id="V99-zv-uk9"/>
+                                                <constraint firstItem="l85-KR-2pE" firstAttribute="bottom" secondItem="oNq-Ml-z3x" secondAttribute="bottomMargin" id="Wa7-we-c2J"/>
+                                                <constraint firstItem="ORr-jS-56d" firstAttribute="top" secondItem="1fd-Bd-lAx" secondAttribute="top" id="bb1-m6-QS3"/>
+                                                <constraint firstItem="ORr-jS-56d" firstAttribute="leading" secondItem="oNq-Ml-z3x" secondAttribute="leadingMargin" id="dOx-h4-ldY"/>
+                                                <constraint firstItem="0zH-69-UIx" firstAttribute="top" secondItem="ORr-jS-56d" secondAttribute="bottom" constant="28" id="dTR-0f-8Wt"/>
+                                                <constraint firstItem="1fd-Bd-lAx" firstAttribute="trailing" secondItem="l85-KR-2pE" secondAttribute="trailing" id="e8r-3g-gCH"/>
+                                                <constraint firstItem="ORr-jS-56d" firstAttribute="leading" secondItem="0zH-69-UIx" secondAttribute="leading" id="fCB-BO-sTq"/>
+                                                <constraint firstItem="ORr-jS-56d" firstAttribute="top" secondItem="oNq-Ml-z3x" secondAttribute="topMargin" id="gyl-eI-Zck"/>
+                                                <constraint firstItem="0zH-69-UIx" firstAttribute="leading" secondItem="l85-KR-2pE" secondAttribute="leading" id="tjW-JN-uI4"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <accessibility key="accessibilityConfiguration" identifier="TaskCell"/>
+                                        <connections>
+                                            <outlet property="taskCellButton" destination="ORr-jS-56d" id="QuY-28-bO4"/>
+                                            <outlet property="taskCellDateText" destination="0zH-69-UIx" id="Ono-4s-8Un"/>
+                                            <outlet property="taskCellImage" destination="l85-KR-2pE" id="KXo-rH-8ZV"/>
+                                            <outlet property="taskCellText" destination="1fd-Bd-lAx" id="2Po-Ok-sJ2"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -255,6 +309,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ORa-L1-BYy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="Kz5-gm-CYa" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-900" y="-480.28169014084511"/>
         </scene>
@@ -428,6 +483,7 @@
     <resources>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="chevron.right" catalog="system" width="97" height="128"/>
+        <image name="circle" catalog="system" width="128" height="123"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -32,7 +32,26 @@ import FirebaseFirestore
  
  */
 
-class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class TaskCell : UITableViewCell{
+    
+    @IBOutlet weak var taskCellButton: UIButton!
+    
+    @IBOutlet weak var taskCellText: UILabel!
+    
+    @IBOutlet weak var taskCellDateText: UILabel!
+    
+    @IBOutlet weak var taskCellImage: UIImageView!
+    
+    var closure: (()->())?
+    
+    @IBAction func taskCellButtonPressed(_ sender: UIButton) {
+        closure?()
+    }
+
+    
+}
+
+class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
     
     
     @IBOutlet weak var categoryPicker: UIPickerView!
@@ -52,15 +71,18 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     var categories : Results<Category>?
     
     var categoryString = ""
+    var category : Category = Category()
     
     var isLoadingFromDelete = false
     var isInitialLoad = true
+    var isLoadingToCompleted = false
     
     var dateClicked : Date = Date()
     
     var imageUri = ""
     var imagePicker = UIImagePickerController()
     var isUpdatingPhoto = true
+
     
     var monthInt : Int = 1
     var dayInt : Int = 1
@@ -78,13 +100,19 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        tableView.delegate = self
+        tableView.dataSource = self
+        categoryPicker.delegate = self
+        categoryPicker.dataSource = self
 
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         print("view will appear")
+        
+        fullTaskList = realm.objects(Task.self)
+        
         //user clicked on a date, set date from ints sent from user
         if(!isToday){
             
@@ -113,6 +141,8 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         dayTitleLabel.text = dateClicked.formatted()
         
         setCurrentTaskList(fullTaskList)
+        
+        setupCategories()
         
         setBackgroundImage()
         
@@ -317,20 +347,153 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
     }
     
-    
+    //category picker displays notes in category selected for the day
     func setPicker(){
         
-        //TODO: implement
+        print("set picker")
+        
+        categoryPicker.reloadAllComponents()
+        
+        if(isLoadingToCompleted){
+            //set the category picker to show completed list
+            if let index = categories?.firstIndex(where: {$0.categoryName == "Completed"}){
+                
+                categoryPicker.selectRow(index, inComponent: 0, animated: true)
+                
+                
+                //TODO: get this from the picker instead
+                categoryString = "Completed"
+                
+                setCurrentTaskList(fullTaskList)
+                
+                tableView.reloadData()
+            }
+            else{
+                print("cannot obtain completed index")
+            }
+            isLoadingToCompleted = false
+            
+        }
+        else{
+            //set the categpory picker to show the first task (To Do List)
+            categoryPicker.selectRow(0, inComponent: 0, animated: true)
+            
+            
+            //TODO: get this from the picker instead
+            categoryString = "To Do List"
+            
+            setCurrentTaskList(fullTaskList)
+            
+            tableView.reloadData()
+        }
+        
+        
+        deleteCatButton.isHidden = true
+        
         
     }
     
     
-    func getCategories(){
+    func setupCategories(){
         
-        //TODO: implement
+        print("setup categories")
+        
+        categories = realm.objects(Category.self)
+        
+        var toDoListExists = false
+        var completedExists = false
+        
+        if let categoryList = categories{
+            
+            print("category list from categories created.")
+            
+            for category in categoryList{
+             
+                if(category.categoryName == "To Do List"){
+                    
+                    print("to do list exists")
+                    
+                    toDoListExists = true
+    
+                }
+                
+                if(category.categoryName == "Completed"){
+                    
+                    print("completed exists")
+                    
+                    completedExists = true
+    
+                }
+            }
+            
+        }
+        else{
+            print("Main: failed to get categories from realm")
+            //show error feedback to user
+            let alert = UIAlertController(title: "Error", message: "Failed to load categories", preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                
+            }))
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        
+        if(!toDoListExists){
+            
+            print("to do list doesn't exist b")
+            
+            let category = Category()
+            category.categoryName = "To Do List"
+            do{
+                try realm.write {
+                    realm.add(category)
+                }
+
+            } catch {
+                print("Error saving category \(error)")
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
+
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+                }))
+
+                self.present(alert, animated: true, completion: nil)
+            }
+            
+        }
+        
+        if(!completedExists){
+            
+            print("completed doesn't exist b")
+        
+            let category = Category()
+            category.categoryName = "Completed"
+            do{
+                try realm.write {
+                    realm.add(category)
+                }
+
+            } catch {
+                print("Error saving category \(error)")
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
+
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+                }))
+
+                self.present(alert, animated: true, completion: nil)
+            }
+            
+        }
+        
+        setPicker()
         
     }
     
+
     
     func setCurrentTaskList(_ tasks : Results<Task>?){
         
@@ -341,12 +504,20 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         //for the full list of tasks
         if let taskList = fullTaskList{
             for task in taskList{
-             
+                
                 //if the task matches the selected category
                 if(task.category == categoryString){
                     
-                    //add it to the currentTaskList
-                    currentTaskList.append(task)
+                    //remove the time componented
+                    let dueDateNoTime = task.dueDate.removeTimeStamp
+                    let dateClickedNoTime = dateClicked.removeTimeStamp
+                    //if the dueDate matches the date clicked
+                    if(dueDateNoTime == dateClickedNoTime){
+                        
+                        //add it to the currentTaskList
+                        currentTaskList.append(task)
+                    }
+                    
                 }
                 
                 
@@ -417,15 +588,170 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
     }
 
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return currentTaskList.count
+    }
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
+        
+        let task = currentTaskList[indexPath.row]
+        
+        cell.taskCellText.text = task.taskString
+        
+        cell.taskCellDateText.text = task.dueDate.formatted()
+        
+        cell.closure = {
+            
+            //if category is not completed, move task to completed
+            if(self.categoryString != "Completed"){
+                if let completedCat = self.realm.objects(Category.self).first(where: {$0.self.categoryName == "Completed"}){
+                    
+                    do{
+                        
+                        try self.realm.write {
+                            task.category = "Completed"
+                            
+                            completedCat.tasks.append(task)
+                            
+                            //TODO: display label saying it was deleted?
+                            
+                            self.isLoadingToCompleted = true
+                            self.setPicker()
+                            
+                        }
+                        
+                    } catch {
+                        print("Error editing task \(error)")
+                        //show error feedback to user
+                        let alert = UIAlertController(title: "Error", message: "Failed to edit task. \(error)", preferredStyle: .alert)
+                        
+                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                            
+                        }))
+                        
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                }
+            }
+            //category is completed, prompt user to delete task
+            else{
+                
+                
+                //show a dialog to confirm that user wants to delete. if they do call delete()
+                let alert = UIAlertController(title: "Delete", message: "Are you sure that you want to delete this?", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: { [weak alert] (_) in
+                    print("delete method called")
+                    self.delete(task: task)
+                }))
+                alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak alert] (_) in
+                    print("delete canceled")
+                }))
+                
+                self.present(alert, animated: true, completion: nil)
+                
+            }
+            
+        }
+        
+        
+        
+        return cell
+        
+    }
     
-    //TODO: tableview methods
+    func delete(task: Task){
+        
+        //delete task
+        if let taskToDelete = self.realm.objects(Task.self).first(where: {$0.taskString == task.taskString}){
+            
+            do{
+                
+                try self.realm.write {
+                    realm.delete(taskToDelete)
+                    
+                    isLoadingToCompleted = true
+                    setPicker()
+                    
+                    
+                }
+                
+            } catch {
+                print("Error deleting task \(error)")
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Failed to remove task. \(error)", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                    
+                }))
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+            
+            
+        }
+
+    }
     
-    //TODO: on tableview item selected
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let secondVc = storyboard.instantiateViewController(withIdentifier: "WriteNoteViewController") as! WriteNoteViewController
+        
+        secondVc.isEdit = true
+        secondVc.taskToUpdate = currentTaskList[indexPath.row]
+        
+        secondVc.modalPresentationStyle = .fullScreen
+        self.show(secondVc, sender: true)
+        
+    }
     
-    //TODO: tableview cell "radio button clicked" method
+
+///MARK : picker methods
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
     
-    //TODO: picker methods
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return categories?.count ?? 0
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return categories?[row].categoryName ?? ""
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        if let string = categories?[row].categoryName {
+            
+            categoryString = string
+            category.categoryName = categoryString
+            
+            print("category string = \(categoryString)")
+            
+            setCurrentTaskList(fullTaskList)
+            
+            tableView.reloadData()
+            
+            
+        }
+        else{
+            
+            print("category selected could not be obtained")
+            //show error feedback to user
+            let alert = UIAlertController(title: "Error", message: "Failed to find category", preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                
+            }))
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        
+        
+    }
     
 
 }
@@ -454,4 +780,13 @@ extension UIImageView {
     }
     
     
+}
+
+extension Date {
+    public var removeTimeStamp : Date? {
+       guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: self)) else {
+        return nil
+       }
+       return date
+   }
 }
