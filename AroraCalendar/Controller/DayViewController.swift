@@ -32,7 +32,7 @@ import FirebaseFirestore
  
  */
 
-class DayViewController: UIViewController {
+class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
     @IBOutlet weak var categoryPicker: UIPickerView!
@@ -60,7 +60,18 @@ class DayViewController: UIViewController {
     
     var imageUri = ""
     var imagePicker = UIImagePickerController()
+    var isUpdatingPhoto = true
     
+    var monthInt : Int = 1
+    var dayInt : Int = 1
+    var yearInt : Int = 2000
+    
+    var isLeapYear = false
+    
+    //this will be a default true bool that will be set to false if we are coming to this view from the user clicking on a specific date on the calendar
+    var isToday = true
+    
+    let defaults = UserDefaults()
     
     
 
@@ -73,22 +84,37 @@ class DayViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
+        print("view will appear")
+        //user clicked on a date, set date from ints sent from user
+        if(!isToday){
+            
+            //make a date from the sent Ints
+            var dateComponents = DateComponents()
+            dateComponents.year = yearInt
+            dateComponents.month = monthInt
+            dateComponents.day = dayInt
+            dateComponents.hour = 0
+            dateComponents.minute = 0
+            
+            //if the year is divisible by 4 it is a leap year
+            if(yearInt % 4 == 0){
+                isLeapYear = true
+            }
+            else{
+                isLeapYear = false
+            }
+            
+            //set it to the date object
+            dateClicked = NSCalendar.current.date(from: dateComponents) ?? Date()
+        }
         
-        //TODO: Get stored day, month, year.
-        
-        //TODO: if there is stored date info, use it to make a date.
-        //TODO: else set the date to now.
-        
-        //TODO: set the title using the date
-        
+        //TODO: remove time from date string... custom write the string
+        //set the title using the date
+        dayTitleLabel.text = dateClicked.formatted()
         
         setCurrentTaskList(fullTaskList)
         
-        //TODO: set the background image
-        
-        
-        
-        
+        setBackgroundImage()
         
         tableView.rowHeight = 120
         
@@ -98,8 +124,13 @@ class DayViewController: UIViewController {
     }
     
     func goToCalendar(){
-    
-        //TODO: switch view to calendar.  send the month, year so that it is displayed over there.
+        
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let secondVc = storyboard.instantiateViewController(withIdentifier: "CalendarGridViewController") as! CalendarGridViewController
+        secondVc.year = yearInt
+        secondVc.monthInt = monthInt
+        secondVc.modalPresentationStyle = .fullScreen
+        self.show(secondVc, sender: true)
         
     }
     
@@ -113,25 +144,128 @@ class DayViewController: UIViewController {
     
     @IBAction func todayButtonPressed(_ sender: UIBarButtonItem) {
         
-        //TODO: switch to today's date in this view
+        print("today button")
+        
+        //switch to today's date in this view
+        dateClicked = Date()
+        self.viewDidLoad()
+        self.viewWillAppear(true)
+        print("today button")
         
     }
     
     
-    //TODO: rename to changeBackgroundButtonPressed?
-    @IBAction func changeBackgroundView(_ sender: UIBarButtonItem) {
+    @IBAction func changeBackgroundButtonPressed(_ sender: UIBarButtonItem) {
         
-        //TODO: prompt user to select a photo
+        print("change bg button pressed")
         
-        //TODO: save the image to firebase
-        //TODO: and save the image to local storage
-        
-        //TODO: set photo to background
+        //prompt user to pick a photo
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            
+            print("Button image picker")
+            
+            imagePicker.delegate = self
+            imagePicker.sourceType = .photoLibrary
+            imagePicker.allowsEditing = false
+            
+            present(imagePicker, animated: true, completion: nil)
+            
+        }
         
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        picker.dismiss(animated: true, completion: nil)
+        
+        if let imageURL = info[UIImagePickerController.InfoKey.imageURL] as? URL{
+            
+            print("loaded url")
+            
+            bgImage.backgroundColor = .clear
+            imageUri = imageURL.absoluteString
+            isUpdatingPhoto = true
+            
+            //set the selected photo to the background
+            bgImage.load(url: imageURL)
+            
+            
+            let timestamp : Timestamp = Timestamp()
+            //unique device id
+            let udid = UIDevice.current.identifierForVendor?.uuidString
+        
+            //create image file path
+            //titlestring will not be nil here and user id should not be either because of checks
+            let imageName = "\(udid)\(timestamp.seconds)"
+            let filepath = Storage.storage()
+                .reference(withPath: "background_images")
+                .child(imageName)
+            
+            guard let url = URL(string: imageUri) else { return }
+            
+            
+            //save image to file path
+            let uploadTask = filepath.putFile(from: url, metadata: nil){ metadata, error in
+                
+                guard let metadata = metadata else{
+                    print("meta data block fail.")
+                    return
+                }
+
+            }
+            
+            uploadTask.observe(.success){ snapshot in
+                
+                //TODO: progressbar invisible
+                
+                filepath.downloadURL(completion: { url, error in
+                    
+                    
+                    //error getting the download url
+                    if let error = error {
+                        print("Failed to get download url.")
+                        //show error to user
+                        let alert = UIAlertController(title: "Error", message: "Failed to get download url.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                            print("alert closed")
+                        }))
+                        self.present(alert, animated: true, completion: nil)
+                        
+                        return
+                    }
+                    //successfully obtained the download url
+                    else{
+                        
+                        let firebaseUrlString = url?.absoluteString
+                        
+                        
+                        //save the url locally as the bg image
+                        self.defaults.setValue(firebaseUrlString, forKey: "bgimageurl")
+                        
+                        print("successfully uploaded the image. url: \(self.defaults.string(forKey: "bgimageurl") ?? "no url")")
+                        
+                    }
+                })
+            }
+            
+        } else{
+            print("failed to get url")
+        }
+        
+    }
+    
+    //set the background image to the saved image
     func setBackgroundImage(){
-        //TODO: implement
+        
+        if let urlString : String = defaults.string(forKey: "bgimageurl"){
+            print("setBackgroundImage: loaded url string from UserDefaults")
+            let url : URL = URL(string: urlString)!
+            bgImage.load(url: url)
+        }
+        else{
+            print("setBackgroundImage: No image loaded")
+        }
+        
     }
     
     func deleteCategory(){
@@ -294,4 +428,30 @@ class DayViewController: UIViewController {
     //TODO: picker methods
     
 
+}
+
+extension UIImageView {
+    
+    func load(url: URL){
+        
+        DispatchQueue.global().async { [weak self] in
+            
+            if let data = try? Data(contentsOf: url){
+                if let image = UIImage(data: data){
+                    DispatchQueue.main.async {
+                        self?.image = image
+                    }
+                }
+            }
+        }
+    }
+    
+    func imageResized(to size: CGSize) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { _ in
+            draw(CGRect(origin: .zero, size: size))
+            
+        }
+    }
+    
+    
 }

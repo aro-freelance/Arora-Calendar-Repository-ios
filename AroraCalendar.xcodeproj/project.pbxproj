@@ -23,6 +23,7 @@
 		382DD9B9293BCD8A004D385B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9B8293BCD8A004D385B /* FirebaseAuth */; };
 		382DD9BB293BCD8A004D385B /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9BA293BCD8A004D385B /* FirebaseFirestoreSwift */; };
 		382DD9BD293BCD8A004D385B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 382DD9BC293BCD8A004D385B /* FirebaseStorage */; };
+		38C36A80293FB9C40076BE71 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 38C36A7F293FB9C40076BE71 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		382DD9AC293BC7EF004D385B /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		382DD9AE293BC810004D385B /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		382DD9B0293BC8FD004D385B /* DayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayViewController.swift; sourceTree = "<group>"; };
+		38C36A7F293FB9C40076BE71 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 				382DD999293BBDBB004D385B /* Assets.xcassets */,
 				382DD99B293BBDBB004D385B /* LaunchScreen.storyboard */,
 				382DD99E293BBDBB004D385B /* Info.plist */,
+				38C36A7F293FB9C40076BE71 /* GoogleService-Info.plist */,
 			);
 			path = AroraCalendar;
 			sourceTree = "<group>";
@@ -186,6 +189,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				382DD99D293BBDBB004D385B /* LaunchScreen.storyboard in Resources */,
+				38C36A80293FB9C40076BE71 /* GoogleService-Info.plist in Resources */,
 				382DD99A293BBDBB004D385B /* Assets.xcassets in Resources */,
 				382DD998293BBDB8004D385B /* Main.storyboard in Resources */,
 			);

@@ -45,11 +45,15 @@ class CalendarGridViewController: UIViewController {
     var imageUri = ""
     var imagePicker = UIImagePickerController()
     
+    var year = 2000
+    var monthInt = 1
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
       
+        print("year : \(year). monthInt : \(monthInt)")
         
     }
     
