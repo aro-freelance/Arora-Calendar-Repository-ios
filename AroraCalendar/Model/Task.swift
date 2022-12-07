@@ -23,9 +23,13 @@ class Task : Object {
     
     @objc dynamic var imageUrl : String = ""
     
-    @objc dynamic var colorInt : Int = 0
+    @objc dynamic var redValue : Float = 0
     
-    @objc dynamic var textColorInt : Int = 0
+    @objc dynamic var greenValue : Float = 0
+    
+    @objc dynamic var blueValue : Float = 0
+    
+    @objc dynamic var isTextWhite : Bool = false
     
     
     var parentCategory = LinkingObjects(fromType: Category.self, property: "tasks")

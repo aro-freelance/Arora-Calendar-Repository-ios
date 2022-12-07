@@ -64,7 +64,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     @IBOutlet weak var deleteCatButton: UIButton!
     
-    let realm = try! Realm()
+    lazy var realm = try! Realm()
     
     var currentTaskList = [Task]()
     var fullTaskList : Results<Task>?
