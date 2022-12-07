@@ -132,6 +132,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             //photo
             if let url = URL(string: taskToUpdate.imageUrl){
                 image.load(url: url)
+                imageUri = taskToUpdate.imageUrl
             }
             
             //color
@@ -436,8 +437,14 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             var newTask = Task()
             newTask.taskString = taskString
+            //TODO: consider removing date from UI... we really just want user to add to the date they entered from
             newTask.dueDate = dueDate
             newTask.category = categoryString
+            newTask.imageUrl = imageUri
+            newTask.redValue = redValue
+            newTask.greenValue = greenValue
+            newTask.blueValue = blueValue
+            newTask.isTextWhite = isTextWhite
             
             
             
@@ -447,9 +454,15 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             if(isEdit){
                 
                 taskToUpdate.taskString = taskString
+                //TODO: update this so it is dateclicked?
                 taskToUpdate.dueDate = dueDate
                 taskToUpdate.category = categoryString
                 taskToUpdate.isDone = false
+                taskToUpdate.imageUrl = imageUri
+                taskToUpdate.redValue = redValue
+                taskToUpdate.greenValue = greenValue
+                taskToUpdate.blueValue = blueValue
+                taskToUpdate.isTextWhite = isTextWhite
                 
                 do{
                     try self.realm.write {
