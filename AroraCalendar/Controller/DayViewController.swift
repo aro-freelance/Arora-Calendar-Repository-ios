@@ -34,11 +34,11 @@ import FirebaseFirestore
 
 class TaskCell : UITableViewCell{
     
+    @IBOutlet weak var cellUIView: UIView!
+    
     @IBOutlet weak var taskCellButton: UIButton!
     
     @IBOutlet weak var taskCellText: UILabel!
-    
-    @IBOutlet weak var taskCellDateText: UILabel!
     
     @IBOutlet weak var taskCellImage: UIImageView!
     
@@ -673,17 +673,32 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        //TODO: implement
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
         
         let task = dailyCatTaskList[indexPath.row]
         
         cell.taskCellText.text = task.taskString
         
-        cell.taskCellDateText.text = task.dateCreated.formatted()
+        cell.cellUIView.backgroundColor = UIColor(red: (CGFloat(task.redValue)/255), green: (CGFloat(task.greenValue)/255), blue: (CGFloat(task.blueValue)/255), alpha: 1)
+        
+        if(task.isTextWhite){
+            cell.taskCellText.textColor = .white
+        }
+        else{
+            cell.taskCellText.textColor = .black
+        }
+        
+        if let url = URL(string: task.imageUrl){
+            print("image should show on \(task.taskString) cell. url: \(task.imageUrl)")
+            cell.taskCellImage.load(url: url)
+        }
+        else{
+            print("could not load url to image")
+        }
+        
         
         cell.closure = {
-            
+            print("clicked button. closure for \(task.taskString)")
             //if category is not completed, move task to completed
             if(self.categoryString != "Completed"){
                 if let completedCat = self.realm.objects(Category.self).first(where: {$0.self.categoryName == "Completed"}){

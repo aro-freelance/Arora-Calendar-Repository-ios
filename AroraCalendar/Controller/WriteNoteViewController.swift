@@ -51,6 +51,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     @IBOutlet weak var previewColorLabel: UILabel!
     
+    @IBOutlet weak var dateTitleLabel: UILabel!
     
     @IBOutlet weak var colorPreviewImageView: UIImageView!
     
@@ -304,8 +305,73 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             image.load(url: imageURL)
             
+            uploadImage(imageUri)
+            
         } else{
             print("failed to get url")
+        }
+        
+    }
+    
+    func uploadImage(_ urlString : String){
+        
+        var timestamp : Timestamp = Timestamp()
+    
+        //create image file path
+        //titlestring will not be nil here and user id should not be either because of checks
+        let imageName = "\(urlString)\(timestamp.seconds)"
+        let filepath = Storage.storage()
+            .reference(withPath: "journal_images")
+            .child(imageName)
+        
+        guard let url = URL(string: imageUri) else { return }
+        
+        
+        //save image to file path
+        let uploadTask = filepath.putFile(from: url, metadata: nil){ metadata, error in
+            
+            guard let metadata = metadata else{
+                print("meta data block fail.")
+                return
+            }
+
+        }
+        
+        uploadTask.observe(.success){ snapshot in
+            
+            //TODO: progressbar invisible
+            
+            filepath.downloadURL(completion: { url, error in
+                
+                
+                //error getting the download url
+                if let error = error {
+                    print("Failed to get download url.")
+                    //show error to user
+                    let alert = UIAlertController(title: "Error", message: "Failed to get download url.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+                        print("alert closed")
+                    }))
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    return
+                }
+                //successfully obtained the download url
+                else{
+                    //the downloaded url as a string
+                    guard let safeUrl = url else { return }
+                    
+                    
+                    let imageUrl : String = (safeUrl.absoluteString) ?? ""
+                    
+                    self.imageUri = imageUrl
+                    
+                    self.isUpdatingPhoto = true
+                    
+                    
+                }
+                
+            })
         }
         
     }
