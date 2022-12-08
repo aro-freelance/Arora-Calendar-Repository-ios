@@ -23,6 +23,8 @@ class Task : Object {
     
     @objc dynamic var imageUrl : String = ""
     
+    @objc dynamic var hasImage : Bool = false
+    
     @objc dynamic var redValue : Float = 0
     
     @objc dynamic var greenValue : Float = 0

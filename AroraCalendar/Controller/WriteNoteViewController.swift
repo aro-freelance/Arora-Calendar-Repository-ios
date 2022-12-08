@@ -511,6 +511,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             newTask.greenValue = greenValue
             newTask.blueValue = blueValue
             newTask.isTextWhite = isTextWhite
+            newTask.hasImage = isUpdatingPhoto
             
             
             
@@ -529,6 +530,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 taskToUpdate.greenValue = greenValue
                 taskToUpdate.blueValue = blueValue
                 taskToUpdate.isTextWhite = isTextWhite
+                taskToUpdate.hasImage = isUpdatingPhoto
                 
                 do{
                     try self.realm.write {

@@ -106,6 +106,9 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         tableView.dataSource = self
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
+        
+        tableView.estimatedRowHeight = 120.0
+        tableView.rowHeight = UITableView.automaticDimension
 
     }
     
@@ -148,7 +151,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         setBackgroundImage()
         
-        tableView.rowHeight = 120
+        //tableView.rowHeight = 120
         
         tableView.reloadData()
         
@@ -688,13 +691,26 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             cell.taskCellText.textColor = .black
         }
         
-        if let url = URL(string: task.imageUrl){
-            print("image should show on \(task.taskString) cell. url: \(task.imageUrl)")
-            cell.taskCellImage.load(url: url)
+        if(task.hasImage){
+            if let url = URL(string: task.imageUrl){
+                print("\(task.taskString) image.")
+                
+                cell.taskCellImage.isHidden = false
+                cell.taskCellImage.contentMode = UIView.ContentMode.scaleToFill
+                cell.taskCellImage.load(url: url)
+            }
+            else{
+                print("could not load url to image")
+            }
         }
         else{
-            print("could not load url to image")
+            
+            print("\(task.taskString) no image.")
+            
+            cell.taskCellImage.isHidden = true
         }
+        
+        
         
         
         cell.closure = {
