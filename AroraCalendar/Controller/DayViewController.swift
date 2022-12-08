@@ -66,7 +66,8 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     lazy var realm = try! Realm()
     
-    var currentTaskList = [Task]()
+    var dailyTaskList = [Task]()
+    var dailyCatTaskList = [Task]()
     var fullTaskList : Results<Task>?
     var categoriesFull : Results<Category>?
     var categoryStrings = [String]()
@@ -141,7 +142,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         //set the title using the date
         dayTitleLabel.text = dateClicked.formatted()
         
-        setCurrentTaskList(fullTaskList)
+        setDayTaskList(fullTaskList)
         
         setupCategories()
         
@@ -365,7 +366,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
                 //TODO: get this from the picker instead
                 categoryString = "Completed"
                 
-                setCurrentTaskList(fullTaskList)
+                setDayTaskList(fullTaskList)
                 
                 tableView.reloadData()
             }
@@ -383,7 +384,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             //TODO: get this from the picker instead
             categoryString = "To Do List"
             
-            setCurrentTaskList(fullTaskList)
+            setDayTaskList(fullTaskList)
             
             tableView.reloadData()
         }
@@ -502,47 +503,89 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
 
     
-    func setCurrentTaskList(_ tasks : Results<Task>?){
+    func setDayTaskList(_ tasks : Results<Task>?){
         
-        currentTaskList.removeAll()
+        dailyTaskList.removeAll()
         
-        print("set current task list")
         
         //for the full list of tasks
         if let taskList = fullTaskList{
             for task in taskList{
-                
-                //if the task matches the selected category
-                if(task.category == categoryString){
                     
                     //remove the time componented
-                    let dueDateNoTime = task.dueDate.removeTimeStamp
+                    let taskDateNoTime = task.dateCreated.removeTimeStamp
                     let dateClickedNoTime = dateClicked.removeTimeStamp
                     
                     
-                    print("duedate: \(dueDateNoTime). dateClicked \(dateClickedNoTime). task cat \(task.category). cat string \(categoryString).")
-                    
                     //if the dueDate matches the date clicked
-                    if(dueDateNoTime == dateClickedNoTime){
-                        
-                        print("times match")
+                    if(taskDateNoTime == dateClickedNoTime){
                         
                         //add it to the currentTaskList
-                        currentTaskList.append(task)
+                        dailyTaskList.append(task)
                     }
-                    
-                }
-                
                 
             }
         } else{
             print("set current task list: failed to make list from full task list")
         }
         
-        print("current task list count = \(currentTaskList.count)")
+        //then filter for category
+        setCategoryTaskList(dailyTaskList)
+        
+//        print("current task list count = \(dailyTaskList.count)")
+//
+//        //there are tasks in the current list
+//        if(dailyTaskList.count > 0){
+//            deleteCatButton.isHidden = true
+//
+//        }
+//        // there are not tasks in the current list
+//        else{
+//
+//            //if the category is not a default category and is empty show the delete category button
+//            if(categoryString != nil){
+//                if(categoryString != "To Do List" && categoryString != "Completed"){
+//                    //TODO: tell user that the category is empty in a label
+//                    deleteCatButton.isHidden = false
+//
+//                }
+//            }
+//            //To Do List category empty
+//            else if (categoryString == "To Do List"){
+//                //TODO: tell user that category is empty in a label
+//                deleteCatButton.isHidden = true
+//            }
+//            //completed category empty
+//            else{
+//                //TODO: tell user that no tasks are completed in a label
+//                deleteCatButton.isHidden = true
+//            }
+//
+//        }
+//
+//        dailyTaskList = sortByDate(dailyTaskList)
+//
+//        tableView.reloadData()
+        
+    }
+    
+    func setCategoryTaskList(_ tasks : [Task]){
+        
+        dailyCatTaskList.removeAll()
+        
+        for task in dailyTaskList{
+            if(task.category == categoryString){
+                dailyCatTaskList.append(task)
+            }
+        }
+       
+             
+        
+        
+        print("current task list count = \(dailyCatTaskList.count)")
         
         //there are tasks in the current list
-        if(currentTaskList.count > 0){
+        if(dailyCatTaskList.count > 0){
             deleteCatButton.isHidden = true
             
         }
@@ -570,7 +613,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             
         }
         
-        currentTaskList = sortByDate(currentTaskList)
+        dailyCatTaskList = sortByDate(dailyCatTaskList)
         
         tableView.reloadData()
         
@@ -582,7 +625,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             categoryStrings.append("To Do List")
         }
         
-        for task in currentTaskList{
+        for task in dailyTaskList{
             
             print("PING")
             
@@ -603,7 +646,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     func sortByDate(_ tasks : [Task]) -> [Task]{
         
-        return tasks.sorted(by: { $0.dueDate > $1.dueDate })
+        return tasks.sorted(by: { $0.dateCreated > $1.dateCreated })
         
     }
     
@@ -612,14 +655,12 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
-        let task = Task()
-        task.dueDate = dateClicked
         
         let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
         let secondVc = storyboard.instantiateViewController(withIdentifier: "WriteNoteViewController") as! WriteNoteViewController
         
         secondVc.isEdit = false
-        secondVc.task = task
+        secondVc.clickedDate = dateClicked
         
         secondVc.modalPresentationStyle = .fullScreen
         self.show(secondVc, sender: true)
@@ -627,7 +668,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return currentTaskList.count
+        return dailyCatTaskList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -635,11 +676,11 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         //TODO: implement
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
         
-        let task = currentTaskList[indexPath.row]
+        let task = dailyCatTaskList[indexPath.row]
         
         cell.taskCellText.text = task.taskString
         
-        cell.taskCellDateText.text = task.dueDate.formatted()
+        cell.taskCellDateText.text = task.dateCreated.formatted()
         
         cell.closure = {
             
@@ -740,7 +781,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         let secondVc = storyboard.instantiateViewController(withIdentifier: "WriteNoteViewController") as! WriteNoteViewController
         
         secondVc.isEdit = true
-        secondVc.taskToUpdate = currentTaskList[indexPath.row]
+        secondVc.taskToUpdate = dailyCatTaskList[indexPath.row]
         
         secondVc.modalPresentationStyle = .fullScreen
         self.show(secondVc, sender: true)
@@ -758,14 +799,24 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return categoryStrings[row]
+        
+        let s = categoryStrings[row]
+        
+        print("picker string : \(s)")
+        
+        return s
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         categoryString = categoryStrings[row]
+        print("category string = \(categoryString)")
         category.categoryName = categoryStrings[row]
-        setCurrentTaskList(fullTaskList)
+        
+        //setDayTaskList(fullTaskList)
+        
+        setCategoryTaskList(dailyTaskList)
+        
         tableView.reloadData()
         
 //        if let string = categories[row].categoryName {

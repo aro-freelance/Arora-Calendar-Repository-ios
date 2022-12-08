@@ -25,7 +25,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     
     
-    @IBOutlet weak var datePicker: UIDatePicker!
+    //@IBOutlet weak var datePicker: UIDatePicker!
     
     @IBOutlet weak var noteText: UITextView!
     
@@ -81,9 +81,9 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var colorARGB : UIColor?
     var isTextWhite : Bool = false
     
-    var task = Task()
+    //var task = Task()
     var taskToUpdate = Task()
-    var tempTask = Task()
+    //var tempTask = Task()
     
     
     
@@ -121,7 +121,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if(isEdit){
             //date
-            datePicker.date = taskToUpdate.dueDate
+            //datePicker.date = taskToUpdate.dueDate
             
             //text
             noteText.text = taskToUpdate.taskString
@@ -372,17 +372,17 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         var taskString = noteText.text.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        dueDate = datePicker.date
-        
-        
-        if(dueDate == nil){
-            if(isEdit){
-                dueDate = taskToUpdate.dueDate
-            }
-            else{
-                dueDate = Date()
-            }
-        }
+//        dueDate = datePicker.date
+//
+//
+//        if(dueDate == nil){
+//            if(isEdit){
+//                dueDate = taskToUpdate.dueDate
+//            }
+//            else{
+//                dueDate = Date()
+//            }
+//        }
         
         
         if(categoryString == nil){
@@ -438,7 +438,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             var newTask = Task()
             newTask.taskString = taskString
             //TODO: consider removing date from UI... we really just want user to add to the date they entered from
-            newTask.dueDate = dueDate
+            //newTask.dueDate = dueDate
             newTask.category = categoryString
             newTask.imageUrl = imageUri
             newTask.redValue = redValue
@@ -455,7 +455,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 
                 taskToUpdate.taskString = taskString
                 //TODO: update this so it is dateclicked?
-                taskToUpdate.dueDate = dueDate
+                //taskToUpdate.dueDate = dueDate
                 taskToUpdate.category = categoryString
                 taskToUpdate.isDone = false
                 taskToUpdate.imageUrl = imageUri
@@ -489,6 +489,8 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 
                 do{
                     try self.realm.write {
+                        
+                        print("saving new task. Task: \(newTask)")
                         
                         category.tasks.append(newTask)
                         
