@@ -107,8 +107,10 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
         
-        tableView.estimatedRowHeight = 120.0
-        tableView.rowHeight = UITableView.automaticDimension
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+//        tableView.estimatedRowHeight = 400
+//        tableView.rowHeight = UITableView.automaticDimension
 
     }
     
@@ -151,7 +153,6 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         setBackgroundImage()
         
-        //tableView.rowHeight = 120
         
         tableView.reloadData()
         
@@ -679,9 +680,13 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        //tableView.beginUpdates()
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
         
         let task = dailyCatTaskList[indexPath.row]
+        
+        cell.taskCellImage.translatesAutoresizingMaskIntoConstraints = false
         
         cell.taskCellText.text = task.taskString
         
@@ -704,6 +709,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             }
             else{
                 print("could not load url to image")
+                cell.taskCellImage.translatesAutoresizingMaskIntoConstraints = false
             }
         }
         else{
@@ -770,7 +776,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             
         }
         
-        
+        //tableView.endUpdates()
         
         return cell
         
@@ -923,3 +929,16 @@ extension Date {
        return date
    }
 }
+
+//final class ContentSizedTableView: UITableView {
+//    override var contentSize:CGSize {
+//        didSet {
+//            invalidateIntrinsicContentSize()
+//        }
+//    }
+//
+//    override var intrinsicContentSize: CGSize {
+//        layoutIfNeeded()
+//        return CGSize(width: UIView.noIntrinsicMetric, height: contentSize.height)
+//    }
+//}
