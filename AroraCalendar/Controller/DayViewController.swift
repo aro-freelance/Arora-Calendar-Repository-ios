@@ -70,7 +70,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     var dailyCatTaskList = [Task]()
     var fullTaskList : Results<Task>?
     var categoriesFull : Results<Category>?
-    var categoryStrings = [String]()
+    //var categoryStrings = [String]()
     
     var categoryString = ""
     var category : Category = Category()
@@ -361,22 +361,25 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         if(isLoadingToCompleted){
             //set the category picker to show completed list
-            if let index = categoryStrings.firstIndex(where: {$0 == "Completed"}){
-                
-                categoryPicker.selectRow(index, inComponent: 0, animated: true)
-                
-                
-                //TODO: get this from the picker instead
-                categoryString = "Completed"
-                
-                setDayTaskList(fullTaskList)
-                
-                tableView.reloadData()
+            if let categoryList = categoriesFull{
+                if let index = categoryList.firstIndex(where: {$0.categoryName == "Completed"}){
+                    
+                    categoryPicker.selectRow(index, inComponent: 0, animated: true)
+                    
+                    
+                    //TODO: get this from the picker instead
+                    categoryString = "Completed"
+                    
+                    setDayTaskList(fullTaskList)
+                    
+                    tableView.reloadData()
+                }
+                else{
+                    print("cannot obtain completed index")
+                }
+                isLoadingToCompleted = false
             }
-            else{
-                print("cannot obtain completed index")
-            }
-            isLoadingToCompleted = false
+            
             
         }
         else{
@@ -405,102 +408,102 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         categoriesFull = realm.objects(Category.self)
         
-        setupCategoryStrings()
+        //setPicker()
+        
+        //TODO: need to reactivate this... because we need realm to have To Do List and Completed
+        
+        var toDoListExists = false
+        var completedExists = false
+
+        if let categoryList = categoriesFull{
+
+            print("category list from categories created.")
+
+            for category in categoryList{
+
+                if(category.categoryName == "To Do List"){
+
+                    print("to do list exists")
+
+                    toDoListExists = true
+
+                }
+
+                if(category.categoryName == "Completed"){
+
+                    print("completed exists")
+
+                    completedExists = true
+
+                }
+            }
+
+        }
+        else{
+            print("Main: failed to get categories from realm")
+            //show error feedback to user
+            let alert = UIAlertController(title: "Error", message: "Failed to load categories", preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+            }))
+
+            self.present(alert, animated: true, completion: nil)
+        }
+
+        if(!toDoListExists){
+
+            print("to do list doesn't exist b")
+
+            let category = Category()
+            category.categoryName = "To Do List"
+            do{
+                try realm.write {
+                    realm.add(category)
+                }
+
+            } catch {
+                print("Error saving category \(error)")
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
+
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+                }))
+
+                self.present(alert, animated: true, completion: nil)
+            }
+
+        }
+
+        if(!completedExists){
+
+            print("completed doesn't exist b")
+
+            let category = Category()
+            category.categoryName = "Completed"
+            do{
+                try realm.write {
+                    realm.add(category)
+                }
+
+            } catch {
+                print("Error saving category \(error)")
+                //show error feedback to user
+                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
+
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+                }))
+
+                self.present(alert, animated: true, completion: nil)
+            }
+
+        }
+        
+        //setupCategoryStrings()
         
         setPicker()
-        
-        
-        
-//        var toDoListExists = false
-//        var completedExists = false
-//
-//        if let categoryList = categoriesFull{
-//
-//            print("category list from categories created.")
-//
-//            for category in categoryList{
-//
-//                if(category.categoryName == "To Do List"){
-//
-//                    print("to do list exists")
-//
-//                    toDoListExists = true
-//
-//                }
-//
-//                if(category.categoryName == "Completed"){
-//
-//                    print("completed exists")
-//
-//                    completedExists = true
-//
-//                }
-//            }
-//
-//        }
-//        else{
-//            print("Main: failed to get categories from realm")
-//            //show error feedback to user
-//            let alert = UIAlertController(title: "Error", message: "Failed to load categories", preferredStyle: .alert)
-//
-//            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
-//
-//            }))
-//
-//            self.present(alert, animated: true, completion: nil)
-//        }
-//
-//        if(!toDoListExists){
-//
-//            print("to do list doesn't exist b")
-//
-//            let category = Category()
-//            category.categoryName = "To Do List"
-//            do{
-//                try realm.write {
-//                    realm.add(category)
-//                }
-//
-//            } catch {
-//                print("Error saving category \(error)")
-//                //show error feedback to user
-//                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
-//
-//                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
-//
-//                }))
-//
-//                self.present(alert, animated: true, completion: nil)
-//            }
-//
-//        }
-//
-//        if(!completedExists){
-//
-//            print("completed doesn't exist b")
-//
-//            let category = Category()
-//            category.categoryName = "Completed"
-//            do{
-//                try realm.write {
-//                    realm.add(category)
-//                }
-//
-//            } catch {
-//                print("Error saving category \(error)")
-//                //show error feedback to user
-//                let alert = UIAlertController(title: "Error", message: "Failed to save category. \(error)", preferredStyle: .alert)
-//
-//                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
-//
-//                }))
-//
-//                self.present(alert, animated: true, completion: nil)
-//            }
-//
-//        }
-        
-        //setPicker()
         
     }
     
@@ -622,30 +625,30 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
     }
     
-    func setupCategoryStrings(){
-        
-        if(!categoryStrings.contains("To Do List")){
-            categoryStrings.append("To Do List")
-        }
-        
-        for task in dailyTaskList{
-            
-            print("PING")
-            
-            let c = task.category
-            
-            if(!categoryStrings.contains(c)){
-                print("HELLO")
-                categoryStrings.append(c)
-            }
-        }
-        
-        if(!categoryStrings.contains("Completed")){
-            categoryStrings.append("Completed")
-        }
-        
-        print("setupcatstrings: cat strings count = \(categoryStrings.count)")
-    }
+//    func setupCategoryStrings(){
+//
+//        if(!categoryStrings.contains("To Do List")){
+//            categoryStrings.append("To Do List")
+//        }
+//
+//        for task in dailyTaskList{
+//
+//            print("PING")
+//
+//            let c = task.category
+//
+//            if(!categoryStrings.contains(c)){
+//                print("HELLO")
+//                categoryStrings.append(c)
+//            }
+//        }
+//
+//        if(!categoryStrings.contains("Completed")){
+//            categoryStrings.append("Completed")
+//        }
+//
+//        print("setupcatstrings: cat strings count = \(categoryStrings.count)")
+//    }
     
     func sortByDate(_ tasks : [Task]) -> [Task]{
         
@@ -712,7 +715,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         
         
-        
+        //TODO: fix this... currently not working  was working previously
         cell.closure = {
             print("clicked button. closure for \(task.taskString)")
             //if category is not completed, move task to completed
@@ -826,12 +829,16 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return categoryStrings.count
+        return categoriesFull?.count ?? 0
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
-        let s = categoryStrings[row]
+        var s = ""
+        
+        if let categoryTitle = categoriesFull?[row].categoryName{
+            s = categoryTitle
+        }
         
         print("picker string : \(s)")
         
@@ -840,41 +847,41 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        categoryString = categoryStrings[row]
-        print("category string = \(categoryString)")
-        category.categoryName = categoryStrings[row]
+//        categoryString = categoriesFull?[row].categoryName ?? "To Do List"
+//        print("category string = \(categoryString)")
+//        category.categoryName = categoriesFull?[row].categoryName ?? "To Do List"
+//
+//        //setDayTaskList(fullTaskList)
+//
+//        setCategoryTaskList(dailyTaskList)
+//
+//        tableView.reloadData()
         
-        //setDayTaskList(fullTaskList)
-        
-        setCategoryTaskList(dailyTaskList)
-        
-        tableView.reloadData()
-        
-//        if let string = categories[row].categoryName {
-//
-//            categoryString = string
-//            category.categoryName = categoryString
-//
-//            print("category string = \(categoryString)")
-//
-//            setCurrentTaskList(fullTaskList)
-//
-//            tableView.reloadData()
-//
-//
-//        }
-//        else{
-//
-//            print("category selected could not be obtained")
-//            //show error feedback to user
-//            let alert = UIAlertController(title: "Error", message: "Failed to find category", preferredStyle: .alert)
-//
-//            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
-//
-//            }))
-//
-//            self.present(alert, animated: true, completion: nil)
-//        }
+        if let string = categoriesFull?[row].categoryName {
+
+            categoryString = string
+            category.categoryName = categoryString
+
+            print("category string = \(categoryString)")
+
+            setCategoryTaskList(dailyTaskList)
+
+            tableView.reloadData()
+
+
+        }
+        else{
+
+            print("category selected could not be obtained")
+            //show error feedback to user
+            let alert = UIAlertController(title: "Error", message: "Failed to find category", preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+            }))
+
+            self.present(alert, animated: true, completion: nil)
+        }
         
         
     }

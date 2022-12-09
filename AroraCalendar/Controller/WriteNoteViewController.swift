@@ -64,7 +64,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     var isEdit = false
     
-    var categoryString : String = ""
+    var categoryString : String = "To Do List"
     
     var categoriesFull : Results<Category>?
     
@@ -74,7 +74,6 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var imagePicker = UIImagePickerController()
     var isUpdatingPhoto = false
     
-    var colorString = ""
     
     var redValue : Float = 0
     var blueValue : Float = 0
