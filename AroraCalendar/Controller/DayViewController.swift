@@ -163,8 +163,8 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
         let secondVc = storyboard.instantiateViewController(withIdentifier: "CalendarGridViewController") as! CalendarGridViewController
-        secondVc.year = yearInt
-        secondVc.monthInt = monthInt
+        secondVc.currentYearInt = yearInt
+        secondVc.currentMonthInt = monthInt
         secondVc.modalPresentationStyle = .fullScreen
         self.show(secondVc, sender: true)
         

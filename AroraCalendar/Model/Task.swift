@@ -15,7 +15,7 @@ class Task : Object {
     
     @objc dynamic var category : String = ""
     
-    @objc dynamic var dueDate : Date = Date()
+    //@objc dynamic var dueDate : Date = Date()
     
     @objc dynamic var dateCreated : Date = Date()
     
