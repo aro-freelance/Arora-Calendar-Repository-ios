@@ -36,7 +36,7 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     var now = Date()
     
-    var isInitialLoad = true
+    var hasSavedMonthYear = false
     
     var fullTaskList : Results<Task>?
     
@@ -50,6 +50,7 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     var currentYearInt = 2000
     var currentMonthInt = 1
     var currentDate = Date()
+    var monthLength = 30
     
     var monthStringList = [String]()
     
@@ -79,12 +80,34 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     func monthPickerSetup(){
         
-        //if this is the first load, get the locally stored month/year the user was on last time
-        if(isInitialLoad){
+        //get the locally stored month/year the user was on last time if it exists
+        if(hasSavedMonthYear){
+            
             currentMonthInt = defaults.integer(forKey: "currentMonthInt")
             currentYearInt = defaults.integer(forKey: "currentYearInt")
+            hasSavedMonthYear = false
             
-            isInitialLoad = false
+        }
+        //otherwise set the month/year to now
+        else{
+            
+            let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: now)
+            
+            if let m = calendarDate.month{
+                currentMonthInt = m
+            }
+            else{
+                print("Error: could not get month from current date")
+            }
+            
+            if let y = calendarDate.year{
+                currentYearInt = y
+            }
+            else{
+                print("Error: could not get year from current date")
+            }
+            
+            
         }
         
         //set currentDate (from defaults, DayVC, or Date())
@@ -116,6 +139,8 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         monthStringList.append("October \(currentYearInt)")
         monthStringList.append("November \(currentYearInt)")
         monthStringList.append("December \(currentYearInt)")
+        
+        print("monthpickersetup: monthStringList = \(monthStringList)")
         
         monthPicker.reloadAllComponents()
         
@@ -329,28 +354,31 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     //make a list of the tasks for the month so we can display them on the calendar grid
-    func setNotifications(_ taskList : [Task]){
+    func setNotifications(_ taskList : Results<Task>?){
         
-        //for each task in the list
-        for task in taskList{
-            //look at each day in the current month
-            for day in monthList{
-                
-                let taskDateNoTime = task.dateCreated.removeTimeStamp
-                let dayDateNotime = day.removeTimeStamp
-                
-                //if the task date in matches a day that is this month
-                if(taskDateNoTime == dayDateNotime){
-                    //and if it is not in the completed category
-                    if(task.category != "Completed"){
-                     
-                        //put it on the list of dates with notifications
-                        datesWithNotification.append(task.dateCreated)
-                        
+        if let safeTaskList = taskList{
+            //for each task in the list
+            for task in safeTaskList{
+                //look at each day in the current month
+                for day in monthList{
+                    
+                    let taskDateNoTime = task.dateCreated.removeTimeStamp
+                    let dayDateNotime = day.removeTimeStamp
+                    
+                    //if the task date in matches a day that is this month
+                    if(taskDateNoTime == dayDateNotime){
+                        //and if it is not in the completed category
+                        if(task.category != "Completed"){
+                         
+                            //put it on the list of dates with notifications
+                            datesWithNotification.append(task.dateCreated)
+                            
+                        }
                     }
                 }
             }
         }
+        
         
         tableView.reloadData()
         
@@ -385,9 +413,12 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         datesWithNotification.removeAll()
         
         //add dates for end of last month to start of monthList
-        for i in 1...firstDayOffsetInt{
+        let endpoint = firstDayOffsetInt - 1
+        for i in 1...endpoint{
             
-            let dateToAdd : Date = dayOne.advanced(by: -Double(i))
+            //the math here is December 1 - 6 days, December 1 - 5 days... etc until -1. We do not want -0 to happen here because then we will add Dec 1 to list here as well as in the following for loop that adds the actual month.
+            
+            let dateToAdd = Calendar.current.date(byAdding: .day, value: i - firstDayOffsetInt, to: dayOne)!
             
             monthList.append(dateToAdd)
             
@@ -396,10 +427,16 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         //add dates for each day of month to monthList
         for i in 1...monthLength{
             
-            let dateToAdd : Date = dayOne.advanced(by: Double(i))
+            let dateToAdd = Calendar.current.date(byAdding: .day, value: i-1, to: dayOne)!
             
             monthList.append(dateToAdd)
         }
+        
+        
+        setNotifications(fullTaskList)
+        
+        print("getMonthList: monthList \(monthList)")
+        print("getMonthList/setNotifications: datesWithNotification \(datesWithNotification)")
         
         tableView.reloadData()
         
@@ -410,8 +447,19 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     //rows are vertical columns are horizontal
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //TODO: calculate weeks in the calendar
-        let weeks = 4
+        
+        var weeks = 4
+        
+        if(monthLength > 28){
+            weeks = 5
+        }
+        
+        
         return weeks
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 7
     }
     
     
@@ -451,6 +499,8 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         //TODO: make a string from monthList[row].date month and year components. Should read: December 2022
         let monthYearString = monthStringList[row]
+        
+        print("monthStringList: titleForRow = \(monthYearString)")
         
         return monthYearString
     }

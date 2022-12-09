@@ -516,7 +516,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         
         //for the full list of tasks
-        if let taskList = fullTaskList{
+        if let taskList = tasks{
             for task in taskList{
                     
                     //remove the time componented
