@@ -20,8 +20,25 @@ import FirebaseFirestore
  
  */
 
-class CalendarGridViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate,
-                                    UINavigationControllerDelegate {
+class calendarCollectionCell : UICollectionViewCell{
+    
+    @IBOutlet weak var dayLabel: UILabel!
+    
+    @IBOutlet weak var cellBackground: UIView!
+    
+    @IBOutlet weak var notificationLabelOne: UILabel!
+    
+    @IBOutlet weak var notificationLabelTwo: UILabel!
+    
+    @IBOutlet weak var notificationLabelThree: UILabel!
+    
+    
+    
+}
+
+class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate,
+                                  UINavigationControllerDelegate {
+    
     
     
 
@@ -30,13 +47,16 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     @IBOutlet weak var bgImage: UIImageView!
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!
     
     lazy var realm = try! Realm()
     
     var now = Date()
+    var dateComponents = DateComponents()
+    let userCalendar = Calendar(identifier: .gregorian)
     
     var hasSavedMonthYear = false
+    var isInitialLoad = true
     
     var fullTaskList : Results<Task>?
     
@@ -52,6 +72,13 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     var currentDate = Date()
     var monthLength = 30
     
+//    let columnLayout = ColumnFlowLayout(
+//            cellsPerRow: 7,
+//            minimumInteritemSpacing: 10,
+//            minimumLineSpacing: 10,
+//            sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+//        )
+    
     var monthStringList = [String]()
     
     let defaults = UserDefaults()
@@ -59,6 +86,15 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let margin: CGFloat = 10
+        guard let collectionView = collectionView, let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+           flowLayout.minimumInteritemSpacing = margin
+           flowLayout.minimumLineSpacing = margin
+           flowLayout.sectionInset = UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin)
+
+
       
         
     }
@@ -68,51 +104,61 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         
         fullTaskList = realm.objects(Task.self)
         
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        //collectionView.collectionViewLayout = columnLayout
+        
+        monthPicker.delegate = self
+        monthPicker.dataSource = self
+        
         monthPickerSetup()
         
         getMonthList()
 
         setBackgroundImage()
 
-        tableView.reloadData()
+        collectionView.reloadData()
         
     }
+
     
     func monthPickerSetup(){
         
         //get the locally stored month/year the user was on last time if it exists
-        if(hasSavedMonthYear){
+        if(isInitialLoad){
+            if(hasSavedMonthYear){
+                
+                currentMonthInt = defaults.integer(forKey: "currentMonthInt")
+                currentYearInt = defaults.integer(forKey: "currentYearInt")
+                hasSavedMonthYear = false
+                
+            }
+            //otherwise set the month/year to now
+            else{
+                
+                let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: now)
+                
+                if let m = calendarDate.month{
+                    currentMonthInt = m
+                }
+                else{
+                    print("Error: could not get month from current date")
+                }
+                
+                if let y = calendarDate.year{
+                    currentYearInt = y
+                }
+                else{
+                    print("Error: could not get year from current date")
+                }
+            }
             
-            currentMonthInt = defaults.integer(forKey: "currentMonthInt")
-            currentYearInt = defaults.integer(forKey: "currentYearInt")
             hasSavedMonthYear = false
-            
-        }
-        //otherwise set the month/year to now
-        else{
-            
-            let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: now)
-            
-            if let m = calendarDate.month{
-                currentMonthInt = m
-            }
-            else{
-                print("Error: could not get month from current date")
-            }
-            
-            if let y = calendarDate.year{
-                currentYearInt = y
-            }
-            else{
-                print("Error: could not get year from current date")
-            }
-            
-            
+            isInitialLoad = false
         }
         
+        
         //set currentDate (from defaults, DayVC, or Date())
-        var dateComponents = DateComponents()
-        let userCalendar = Calendar(identifier: .gregorian)
         dateComponents.year = currentYearInt
         dateComponents.month = currentMonthInt
         dateComponents.day = 1
@@ -145,10 +191,12 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         monthPicker.reloadAllComponents()
         
         //set picker to the month it should be showing on load (Jan by default or the most recent user selection)
-        
         //TODO: this is giving an error.. fix and turn back on EXC_BAD_ACCESS (code=1, address=0xfffffffffffffffc)
-        //monthPicker.selectRow(currentMonthInt - 1, inComponent: 0, animated: true)
-        tableView.reloadData()
+        monthPicker.selectRow(currentMonthInt - 1, inComponent: 0, animated: true)
+        
+        monthPicker.reloadAllComponents()
+        
+        collectionView.reloadData()
         
     }
     
@@ -156,6 +204,7 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     //month -1
     @IBAction func backMonthButtonPressed(_ sender: UIButton) {
+        //TODO: fix bugs with this.. also possibly change UI to show that this is for changing year
         
         if(currentMonthInt > 1){
             currentMonthInt = currentMonthInt - 1
@@ -164,9 +213,14 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
             currentYearInt = currentYearInt - 1
         }
         
+        print("month: \(currentMonthInt). year: \(currentYearInt)")
+        
+        
+        
         defaults.set(currentMonthInt, forKey: "currentMonthInt")
         defaults.set(currentYearInt, forKey: "currentYearInt")
         
+        monthStringList.removeAll()
         monthList.removeAll()
         datesWithNotification.removeAll()
         
@@ -177,17 +231,21 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     
     //month +1
     @IBAction func forwardMonthButtonPressed(_ sender: UIButton) {
+        //TODO: fix bugs with this.. also possibly change UI to show that this is for changing year
         
-        if(currentMonthInt < 12){
+        if(currentMonthInt <= 12){
             currentMonthInt = currentMonthInt + 1
         } else{
             currentMonthInt = 1
             currentYearInt = currentYearInt + 1
         }
         
+        print("month: \(currentMonthInt). year: \(currentYearInt)")
+        
         defaults.set(currentMonthInt, forKey: "currentMonthInt")
         defaults.set(currentYearInt, forKey: "currentYearInt")
         
+        monthStringList.removeAll()
         monthList.removeAll()
         datesWithNotification.removeAll()
         
@@ -380,12 +438,19 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         }
         
         
-        tableView.reloadData()
+        collectionView.reloadData()
         
     }
     
     //build the list of dates for the month
     func getMonthList(){
+        
+        //build most recent currentDate
+        dateComponents.month = currentMonthInt
+        dateComponents.year = currentYearInt
+        dateComponents.day = 1
+        currentDate = userCalendar.date(from: dateComponents)!
+        
         
         let monthLength = currentDate.daysInMonth()
         
@@ -394,9 +459,6 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         let month = calendarDate.month
         let year = calendarDate.year
         
-        // Specify date components
-        var dateComponents = DateComponents()
-        let userCalendar = Calendar(identifier: .gregorian)
         dateComponents.year = year
         dateComponents.month = month
         dateComponents.day = 1
@@ -414,14 +476,16 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         
         //add dates for end of last month to start of monthList
         let endpoint = firstDayOffsetInt - 1
-        for i in 1...endpoint{
-            
-            //the math here is December 1 - 6 days, December 1 - 5 days... etc until -1. We do not want -0 to happen here because then we will add Dec 1 to list here as well as in the following for loop that adds the actual month.
-            
-            let dateToAdd = Calendar.current.date(byAdding: .day, value: i - firstDayOffsetInt, to: dayOne)!
-            
-            monthList.append(dateToAdd)
-            
+        if(endpoint > 0){
+            for i in 1...endpoint{
+                
+                //the math here is December 1 - 6 days, December 1 - 5 days... etc until -1. We do not want -0 to happen here because then we will add Dec 1 to list here as well as in the following for loop that adds the actual month.
+                
+                let dateToAdd = Calendar.current.date(byAdding: .day, value: i - firstDayOffsetInt, to: dayOne)!
+                
+                monthList.append(dateToAdd)
+                
+            }
         }
         
         //add dates for each day of month to monthList
@@ -438,50 +502,100 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
         print("getMonthList: monthList \(monthList)")
         print("getMonthList/setNotifications: datesWithNotification \(datesWithNotification)")
         
-        tableView.reloadData()
+        collectionView.reloadData()
         
     }
     
     
     
-    //rows are vertical columns are horizontal
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //TODO: calculate weeks in the calendar
-        
-        var weeks = 4
-        
-        if(monthLength > 28){
-            weeks = 5
-        }
-        
-        
-        return weeks
-    }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 7
-    }
-    
-    
-    //populate the cells
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //TODO: implement this... we will also need to make a custom cell for this. Should have Day number, task indications ads dot with color?
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "calendarCollectionCell", for: indexPath) as! calendarCollectionCell
         
         
+        //TODO: fix error when moving from March 2021 to Feb 2021. Out of range on this line.
+        let date = Calendar.current.dateComponents([.day, .year, .month], from: monthList[indexPath.row])
+        let dayString = date.day?.formatted()
+        
+        cell.dayLabel.text = dayString
+        
+        //TODO: if date is in the notificationList, show the notificationLabels for each notification present up to five. notiificationLabel should be the task color
         
         
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        //when a row is selected get the date component for it.
-        let dateClicked = monthList[indexPath.row]
-        //Then send user to DayVC passing that date as the dateclicked.
-        goToDayViewController(date: dateClicked)
+        return monthList.count
         
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        let noOfCellsInRow = 7  //number of column you want
+        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+        let totalSpace = flowLayout.sectionInset.left
+            + flowLayout.sectionInset.right
+            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
+
+        let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
+        return CGSize(width: size, height: size)
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        //when a row is selected get the date component for it.
+         let dateClicked = monthList[indexPath.row]
+         //Then send user to DayVC passing that date as the dateclicked.
+         goToDayViewController(date: dateClicked)
+        
+    }
+    
+//
+//    //rows are vertical columns are horizontal
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        //TODO: calculate weeks in the calendar
+//
+//        var weeks = 4
+//
+//        if(monthLength > 28){
+//            weeks = 5
+//        }
+//
+//
+//        return weeks
+//    }
+//
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 7
+//    }
+//
+//
+//    //populate the cells
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        //TODO: implement this... we will also need to make a custom cell for this. Should have Day number, task indications ads dot with color?
+//
+//        //let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
+//
+//        let cell =
+//
+//
+//
+//
+//        return cell
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//        //when a row is selected get the date component for it.
+//        let dateClicked = monthList[indexPath.row]
+//        //Then send user to DayVC passing that date as the dateclicked.
+//        goToDayViewController(date: dateClicked)
+//
+//    }
     
     
     
@@ -497,7 +611,6 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        //TODO: make a string from monthList[row].date month and year components. Should read: December 2022
         let monthYearString = monthStringList[row]
         
         print("monthStringList: titleForRow = \(monthYearString)")
@@ -508,6 +621,27 @@ class CalendarGridViewController: UIViewController, UITableViewDelegate, UITable
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         //TODO: change the tableview to the month in picker
+        
+        monthList.removeAll()
+        
+        dateComponents.year = currentYearInt
+        dateComponents.month = row + 1
+        dateComponents.day = 1
+
+        // Create date from components for the first day of the month
+        guard let date = userCalendar.date(from: dateComponents) else {
+            print("Error: failed to make date in pickerView didSelectRow")
+            return }
+        
+        defaults.set(dateComponents.month, forKey: "currentMonthInt")
+        defaults.set(dateComponents.year, forKey: "currentYearInt")
+        
+        currentDate = date
+        
+        getMonthList()
+        
+        collectionView.reloadData()
+        
         
     }
     
@@ -529,3 +663,37 @@ extension Date {
     }
 
 }
+
+//class ColumnFlowLayout: UICollectionViewFlowLayout {
+//
+//    let cellsPerRow: Int
+//
+//    init(cellsPerRow: Int, minimumInteritemSpacing: CGFloat = 0, minimumLineSpacing: CGFloat = 0, sectionInset: UIEdgeInsets = .zero) {
+//        self.cellsPerRow = cellsPerRow
+//        super.init()
+//
+//        self.minimumInteritemSpacing = minimumInteritemSpacing
+//        self.minimumLineSpacing = minimumLineSpacing
+//        self.sectionInset = sectionInset
+//    }
+//
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//
+//    override func prepare() {
+//        super.prepare()
+//
+//        guard let collectionView = collectionView else { return }
+//        let marginsAndInsets = sectionInset.left + sectionInset.right + collectionView.safeAreaInsets.left + collectionView.safeAreaInsets.right + minimumInteritemSpacing * CGFloat(cellsPerRow - 1)
+//        let itemWidth = ((collectionView.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
+//        itemSize = CGSize(width: itemWidth, height: itemWidth)
+//    }
+//
+//    override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+//        let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
+//        context.invalidateFlowLayoutDelegateMetrics = newBounds.size != collectionView?.bounds.size
+//        return context
+//    }
+//
+//}
