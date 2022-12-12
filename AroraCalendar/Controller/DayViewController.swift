@@ -143,9 +143,51 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
             dateClicked = NSCalendar.current.date(from: dateComponents) ?? Date()
         }
         
-        //TODO: remove time from date string... custom write the string
         //set the title using the date
-        dayTitleLabel.text = dateClicked.formatted()
+        let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: dateClicked)
+        var dateTitleString = "Failed to Obtain Date"
+        if let month = calendarDate.month{
+            if let day = calendarDate.day{
+                if let year = calendarDate.year{
+                 
+                    var monthName = "Month"
+                    
+                    switch(month){
+                    case 1:
+                        monthName = "January"
+                    case 2:
+                        monthName = "February"
+                    case 3:
+                        monthName = "March"
+                    case 4:
+                        monthName = "April"
+                    case 5:
+                        monthName = "May"
+                    case 6:
+                        monthName = "June"
+                    case 7:
+                        monthName = "July"
+                    case 8:
+                        monthName = "August"
+                    case 9:
+                        monthName = "September"
+                    case 10:
+                        monthName = "October"
+                    case 11:
+                        monthName = "November"
+                    case 12:
+                        monthName = "December"
+                    default:
+                        print("DayVC ViewWillAppear: Error setting up month name")
+                    }
+                    
+                    dateTitleString = "\(monthName) \(day), \(year)"
+                    
+                }
+            }
+        }
+        
+        dayTitleLabel.text = dateTitleString
         
         setDayTaskList(fullTaskList)
         

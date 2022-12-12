@@ -204,7 +204,7 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     
     //month -1
     @IBAction func backMonthButtonPressed(_ sender: UIButton) {
-        //TODO: fix bugs with this.. also possibly change UI to show that this is for changing year
+        //TODO: possibly change UI to show that this is for changing year
         
         if(currentMonthInt > 1){
             currentMonthInt = currentMonthInt - 1
@@ -231,9 +231,9 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     
     //month +1
     @IBAction func forwardMonthButtonPressed(_ sender: UIButton) {
-        //TODO: fix bugs with this.. also possibly change UI to show that this is for changing year
+        //TODO: possibly change UI to show that this is for changing year
         
-        if(currentMonthInt <= 12){
+        if(currentMonthInt < 11){
             currentMonthInt = currentMonthInt + 1
         } else{
             currentMonthInt = 1
@@ -522,6 +522,13 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         
         //TODO: if date is in the notificationList, show the notificationLabels for each notification present up to five. notiificationLabel should be the task color
         
+        //loop through the dates with notifications and see how many (if any) are the date of the cell
+        
+        //use this count to obtain the tasks for the day
+        
+        //for the first 3? 5? tasks for the day, make a notification label visible, set its text to trucated version of thr taskString and set its background color using the rgb values stored in the task
+        
+        
         
         return cell
     }
@@ -554,49 +561,7 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         
     }
     
-//
-//    //rows are vertical columns are horizontal
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        //TODO: calculate weeks in the calendar
-//
-//        var weeks = 4
-//
-//        if(monthLength > 28){
-//            weeks = 5
-//        }
-//
-//
-//        return weeks
-//    }
-//
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return 7
-//    }
-//
-//
-//    //populate the cells
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        //TODO: implement this... we will also need to make a custom cell for this. Should have Day number, task indications ads dot with color?
-//
-//        //let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
-//
-//        let cell =
-//
-//
-//
-//
-//        return cell
-//    }
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//        //when a row is selected get the date component for it.
-//        let dateClicked = monthList[indexPath.row]
-//        //Then send user to DayVC passing that date as the dateclicked.
-//        goToDayViewController(date: dateClicked)
-//
-//    }
-    
+
     
     
     
@@ -611,16 +576,15 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
         let monthYearString = monthStringList[row]
         
-        print("monthStringList: titleForRow = \(monthYearString)")
         
         return monthYearString
     }
     
+    //change the tableview to the month to the month selected by the picker
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
-        //TODO: change the tableview to the month in picker
         
         monthList.removeAll()
         
@@ -641,8 +605,7 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         getMonthList()
         
         collectionView.reloadData()
-        
-        
+
     }
     
 
@@ -663,37 +626,3 @@ extension Date {
     }
 
 }
-
-//class ColumnFlowLayout: UICollectionViewFlowLayout {
-//
-//    let cellsPerRow: Int
-//
-//    init(cellsPerRow: Int, minimumInteritemSpacing: CGFloat = 0, minimumLineSpacing: CGFloat = 0, sectionInset: UIEdgeInsets = .zero) {
-//        self.cellsPerRow = cellsPerRow
-//        super.init()
-//
-//        self.minimumInteritemSpacing = minimumInteritemSpacing
-//        self.minimumLineSpacing = minimumLineSpacing
-//        self.sectionInset = sectionInset
-//    }
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-//
-//    override func prepare() {
-//        super.prepare()
-//
-//        guard let collectionView = collectionView else { return }
-//        let marginsAndInsets = sectionInset.left + sectionInset.right + collectionView.safeAreaInsets.left + collectionView.safeAreaInsets.right + minimumInteritemSpacing * CGFloat(cellsPerRow - 1)
-//        let itemWidth = ((collectionView.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
-//        itemSize = CGSize(width: itemWidth, height: itemWidth)
-//    }
-//
-//    override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
-//        let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
-//        context.invalidateFlowLayoutDelegateMetrics = newBounds.size != collectionView?.bounds.size
-//        return context
-//    }
-//
-//}
