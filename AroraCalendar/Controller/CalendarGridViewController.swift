@@ -72,6 +72,8 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     var currentDate = Date()
     var monthLength = 30
     
+    var maxNotificationPerCell = 3
+    
 //    let columnLayout = ColumnFlowLayout(
 //            cellsPerRow: 7,
 //            minimumInteritemSpacing: 10,
@@ -513,6 +515,10 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "calendarCollectionCell", for: indexPath) as! calendarCollectionCell
         
+        cell.notificationLabelOne.isHidden = true
+        cell.notificationLabelTwo.isHidden = true
+        cell.notificationLabelThree.isHidden = true
+        
         //first row of 7 should be day of week labels
         if(indexPath.row < 7){
 
@@ -544,23 +550,68 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
             //need to subtract 7 to account for the first seven being Day of Week labels
             let row = indexPath.row - 7
             
-            //TODO: fix error when moving from March 2021 to Feb 2021. Out of range on this line.
-            let date = Calendar.current.dateComponents([.day, .year, .month], from: monthList[row])
-            let dayString = date.day?.formatted()
+            let dateComponent = Calendar.current.dateComponents([.day, .year, .month], from: monthList[row])
+            let dayString = dateComponent.day?.formatted()
+            guard let date = userCalendar.date(from: dateComponent) else {
+                print("Error: failed to make date in cellForRowAt")
+                return cell }
+                
             
             cell.dayLabel.text = dayString
             
-            //TODO: if date is in the notificationList, show the notificationLabels for each notification present up to five. notiificationLabel should be the task color
-            
             //loop through the dates with notifications and see how many (if any) are the date of the cell
-            
-            //use this count to obtain the tasks for the day
-            
-            //for the first 3? 5? tasks for the day, make a notification label visible, set its text to trucated version of thr taskString and set its background color using the rgb values stored in the task
-            
-            
-            
-            
+            for d in datesWithNotification{
+                if(d.removeTimeStamp == date.removeTimeStamp){
+                    
+                    //loop through the tasklist
+                    if let taskList = fullTaskList{
+                        for task in taskList{
+                            //if the task matches the date
+                            if(task.dateCreated.removeTimeStamp == d.removeTimeStamp){
+                                //if this is one of the first X tasks, show the notification on the cell
+                                let colorARGB = UIColor(red: (CGFloat(task.redValue)/255), green: (CGFloat(task.greenValue)/255), blue: (CGFloat(task.blueValue)/255), alpha: 1)
+                                
+                                if(cell.notificationLabelOne.isHidden){
+                                    cell.notificationLabelOne.isHidden = false
+                                    cell.notificationLabelOne.text = task.taskString
+                                    cell.notificationLabelOne.backgroundColor = colorARGB
+                                    if(task.isTextWhite){
+                                        cell.notificationLabelOne.textColor = .white
+                                    }else{
+                                        cell.notificationLabelOne.textColor = .black
+                                    }
+                                }
+                                else if (cell.notificationLabelTwo.isHidden){
+                                    cell.notificationLabelTwo.isHidden = false
+                                    cell.notificationLabelTwo.text = task.taskString
+                                    cell.notificationLabelTwo.backgroundColor = colorARGB
+                                    if(task.isTextWhite){
+                                        cell.notificationLabelTwo.textColor = .white
+                                    }else{
+                                        cell.notificationLabelTwo.textColor = .black
+                                    }
+                                    
+                                }
+                                else if (cell.notificationLabelThree.isHidden){
+                                    cell.notificationLabelThree.isHidden = false
+                                    cell.notificationLabelThree.text = task.taskString
+                                    cell.notificationLabelThree.backgroundColor = colorARGB
+                                    if(task.isTextWhite){
+                                        cell.notificationLabelThree.textColor = .white
+                                    }else{
+                                        cell.notificationLabelThree.textColor = .black
+                                    }
+                                }
+                                else{
+                                    print("Error: CollectionView cellForItemAt. notification switch out of range.")
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+
         }
         
     
@@ -592,10 +643,19 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        //when a row is selected get the date component for it.
-         let dateClicked = monthList[indexPath.row]
-         //Then send user to DayVC passing that date as the dateclicked.
-         goToDayViewController(date: dateClicked)
+        
+        if(indexPath.row >= 7){
+            //need to subtract 7 to account for the first seven being Day of Week labels
+            let row = indexPath.row - 7
+            //when a row is selected get the date component for it.
+            let dateClicked = monthList[row]
+             
+            //Then send user to DayVC passing that date as the dateclicked.
+            goToDayViewController(date: dateClicked)
+        }
+        else{
+            print("didSelectItemAt: user clicked on Day of The Week Label")
+        }
         
     }
     
@@ -625,6 +685,7 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         monthList.removeAll()
+        datesWithNotification.removeAll()
         
         dateComponents.year = currentYearInt
         dateComponents.month = row + 1

@@ -99,7 +99,53 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
     
     override func viewWillAppear(_ animated: Bool) {
-
+        
+        //set the title using the date
+        let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: clickedDate)
+        var dateTitleString = "Failed to Obtain Date"
+        if let month = calendarDate.month{
+            if let day = calendarDate.day{
+                if let year = calendarDate.year{
+                 
+                    var monthName = "Month"
+                    
+                    switch(month){
+                    case 1:
+                        monthName = "January"
+                    case 2:
+                        monthName = "February"
+                    case 3:
+                        monthName = "March"
+                    case 4:
+                        monthName = "April"
+                    case 5:
+                        monthName = "May"
+                    case 6:
+                        monthName = "June"
+                    case 7:
+                        monthName = "July"
+                    case 8:
+                        monthName = "August"
+                    case 9:
+                        monthName = "September"
+                    case 10:
+                        monthName = "October"
+                    case 11:
+                        monthName = "November"
+                    case 12:
+                        monthName = "December"
+                    default:
+                        print("DayVC ViewWillAppear: Error setting up month name")
+                    }
+                    
+                    dateTitleString = "\(monthName) \(day), \(year)"
+                    
+                }
+            }
+        }
+        
+        dateTitleLabel.text = dateTitleString
+        
         setupCategories()
         
         setUIOnLoad()
@@ -122,8 +168,6 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     func setUIOnLoad(){
         
         if(isEdit){
-            //date
-            //datePicker.date = taskToUpdate.dueDate
             
             //text
             noteText.text = taskToUpdate.taskString
@@ -439,18 +483,6 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         var taskString = noteText.text.trimmingCharacters(in: .whitespacesAndNewlines)
         
-//        dueDate = datePicker.date
-//
-//
-//        if(dueDate == nil){
-//            if(isEdit){
-//                dueDate = taskToUpdate.dueDate
-//            }
-//            else{
-//                dueDate = Date()
-//            }
-//        }
-        
         
         if(categoryString == nil){
             if(isEdit){
@@ -514,7 +546,8 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             newTask.isTextWhite = isTextWhite
             newTask.hasImage = isUpdatingPhoto
             
-            
+            //this will be sent from the dayView and will default to now if nothing is sent
+            newTask.dateCreated = clickedDate
             
             
             
@@ -522,8 +555,6 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             if(isEdit){
                 
                 taskToUpdate.taskString = taskString
-                //TODO: update this so it is dateclicked?
-                //taskToUpdate.dueDate = dueDate
                 taskToUpdate.category = categoryString
                 taskToUpdate.isDone = false
                 taskToUpdate.imageUrl = imageUri
@@ -599,7 +630,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
         let secondVc = storyboard.instantiateViewController(withIdentifier: "DayViewController") as! DayViewController
         
-        //TODO: pass day info to DayViewController
+        secondVc.dateClicked = clickedDate
         
         secondVc.modalPresentationStyle = .fullScreen
         self.show(secondVc, sender: true)
