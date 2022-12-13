@@ -104,6 +104,8 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         self.navigationItem.setHidesBackButton(true, animated: true)
         
+        tableView.backgroundColor = .clear
+        
         tableView.delegate = self
         tableView.dataSource = self
         categoryPicker.delegate = self
@@ -764,8 +766,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
         }
         
         
-        
-        //TODO: fix this... currently not working  was working previously
+    
         cell.closure = {
             print("clicked button. closure for \(task.taskString)")
             //if category is not completed, move task to completed
@@ -781,7 +782,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
                             
                             //TODO: display label saying it was deleted?
                             
-                            self.isLoadingToCompleted = true
+                            //self.isLoadingToCompleted = true
                             self.setPicker()
                             
                         }
@@ -836,7 +837,7 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
                 try self.realm.write {
                     realm.delete(taskToDelete)
                     
-                    isLoadingToCompleted = true
+                    //isLoadingToCompleted = true
                     setPicker()
                     
                     

@@ -218,7 +218,16 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         categoryPicker.reloadAllComponents()
         
         if(isEdit){
-            //set the category picker to show completed list
+            //if the task is already in completed category, add completed to the category list
+            if(taskToUpdate.category == "Completed"){
+                var cat = Category()
+                cat.categoryName = "Completed"
+                
+                categories.append(cat)
+                
+            }
+            
+            //set the category picker to show complete list
             if let index = categories.firstIndex(where: {$0.categoryName == taskToUpdate.category}){
                 
                 categoryPicker.selectRow(index, inComponent: 0, animated: true)
@@ -487,11 +496,14 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         if(categoryString == nil){
             if(isEdit){
                 categoryString = taskToUpdate.category
+                print("catstring = \(categoryString)")
             }
             else{
                 categoryString = "To Do List"
             }
         }
+        
+        print("catstring = \(categoryString)")
         
         //if the category does not exist, save it to realm db
         if let safeCategoriesFull = categoriesFull{
@@ -533,6 +545,7 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if let category = realm.objects(Category.self).first(where: {$0.categoryName == categoryString}){
             
+            print("category found")
             
             var newTask = Task()
             newTask.taskString = taskString
@@ -554,34 +567,40 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             //editing a task
             if(isEdit){
                 
-                taskToUpdate.taskString = taskString
-                taskToUpdate.category = categoryString
-                taskToUpdate.isDone = false
-                taskToUpdate.imageUrl = imageUri
-                taskToUpdate.redValue = redValue
-                taskToUpdate.greenValue = greenValue
-                taskToUpdate.blueValue = blueValue
-                taskToUpdate.isTextWhite = isTextWhite
-                taskToUpdate.hasImage = isUpdatingPhoto
-                
-                do{
-                    try self.realm.write {
-                        category.tasks.append(taskToUpdate)
-                        
-                        self.goToMainScreen()
+                if let taskToEdit = realm.objects(Task.self).first(where: {$0.dateCreated == taskToUpdate.dateCreated}){
+                    
+                    
+                    do{
+                        try self.realm.write {
+                            taskToEdit.taskString = taskString
+                            taskToEdit.category = categoryString
+                            taskToEdit.isDone = false
+                            taskToEdit.imageUrl = imageUri
+                            taskToEdit.redValue = redValue
+                            taskToEdit.greenValue = greenValue
+                            taskToEdit.blueValue = blueValue
+                            taskToEdit.isTextWhite = isTextWhite
+                            taskToEdit.hasImage = isUpdatingPhoto
+                            category.tasks.append(taskToEdit)
+
+                            self.goToMainScreen()
+                        }
+
+                    } catch {
+                        print("Error editing task \(error)")
+                        //show error feedback to user
+                        let alert = UIAlertController(title: "Error", message: "Failed to save edited task. \(error)", preferredStyle: .alert)
+
+                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
+
+                        }))
+
+                        self.present(alert, animated: true, completion: nil)
                     }
                     
-                } catch {
-                    print("Error editing task \(error)")
-                    //show error feedback to user
-                    let alert = UIAlertController(title: "Error", message: "Failed to save edited task. \(error)", preferredStyle: .alert)
-                    
-                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { [weak alert] (_) in
-                        
-                    }))
-                    
-                    self.present(alert, animated: true, completion: nil)
                 }
+                
+                
                 
             }
             //new task creation

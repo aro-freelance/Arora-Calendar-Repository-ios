@@ -37,7 +37,7 @@ class calendarCollectionCell : UICollectionViewCell{
 }
 
 class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate,
-                                  UINavigationControllerDelegate {
+                                  UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout {
     
     
     
@@ -74,12 +74,7 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     
     var maxNotificationPerCell = 3
     
-//    let columnLayout = ColumnFlowLayout(
-//            cellsPerRow: 7,
-//            minimumInteritemSpacing: 10,
-//            minimumLineSpacing: 10,
-//            sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//        )
+
     
     var monthStringList = [String]()
     
@@ -108,9 +103,10 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         
         fullTaskList = realm.objects(Task.self)
         
+        let semiClear = UIColor(red: 0, green: 0, blue: 0, alpha: 0.4)
+        collectionView.backgroundColor = semiClear
         collectionView.delegate = self
         collectionView.dataSource = self
-        //collectionView.collectionViewLayout = columnLayout
         
         monthPicker.delegate = self
         monthPicker.dataSource = self
@@ -120,8 +116,9 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         getMonthList()
 
         setBackgroundImage()
-
+        
         collectionView.reloadData()
+
         
     }
 
@@ -195,7 +192,6 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
         monthPicker.reloadAllComponents()
         
         //set picker to the month it should be showing on load (Jan by default or the most recent user selection)
-        //TODO: this is giving an error.. fix and turn back on EXC_BAD_ACCESS (code=1, address=0xfffffffffffffffc)
         monthPicker.selectRow(currentMonthInt - 1, inComponent: 0, animated: true)
         
         monthPicker.reloadAllComponents()
@@ -630,15 +626,23 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        let noOfCellsInRow = 7  //number of column you want
-        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
-        let totalSpace = flowLayout.sectionInset.left
-            + flowLayout.sectionInset.right
-            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
 
-        let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
-        return CGSize(width: size, height: size)
-    }
+           let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+
+           let numberofItem: CGFloat = 7
+
+           let collectionViewWidth = self.collectionView.bounds.width
+
+           let extraSpace = (numberofItem - 1) * flowLayout.minimumInteritemSpacing
+
+           let inset = flowLayout.sectionInset.right + flowLayout.sectionInset.left
+
+           let width = Int((collectionViewWidth - extraSpace - inset) / numberofItem)
+
+           return CGSize(width: width, height: width)
+       }
+
+
     
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
