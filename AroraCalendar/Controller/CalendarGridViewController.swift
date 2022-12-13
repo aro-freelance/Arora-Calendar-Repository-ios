@@ -87,6 +87,8 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.setHidesBackButton(true, animated: true)
+        
         let margin: CGFloat = 10
         guard let collectionView = collectionView, let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
 
@@ -507,37 +509,73 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
     }
     
     
-    
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "calendarCollectionCell", for: indexPath) as! calendarCollectionCell
         
+        //first row of 7 should be day of week labels
+        if(indexPath.row < 7){
+
+            switch(indexPath.row){
+
+            case 0:
+                cell.dayLabel.text = "Sun"
+            case 1:
+                cell.dayLabel.text = "Mon"
+            case 2:
+                cell.dayLabel.text = "Tue"
+            case 3:
+                cell.dayLabel.text = "Wed"
+            case 4:
+                cell.dayLabel.text = "Thu"
+            case 5:
+                cell.dayLabel.text = "Fri"
+            case 6:
+                cell.dayLabel.text = "Sat"
+
+            default:
+                print("Error: CollectionView setting up first row of 7 with Day of week labels. Received index of of range.")
+            }
+
+        }
+        //after the first row, implement calendar grid
+        else{
+
+            //need to subtract 7 to account for the first seven being Day of Week labels
+            let row = indexPath.row - 7
+            
+            //TODO: fix error when moving from March 2021 to Feb 2021. Out of range on this line.
+            let date = Calendar.current.dateComponents([.day, .year, .month], from: monthList[row])
+            let dayString = date.day?.formatted()
+            
+            cell.dayLabel.text = dayString
+            
+            //TODO: if date is in the notificationList, show the notificationLabels for each notification present up to five. notiificationLabel should be the task color
+            
+            //loop through the dates with notifications and see how many (if any) are the date of the cell
+            
+            //use this count to obtain the tasks for the day
+            
+            //for the first 3? 5? tasks for the day, make a notification label visible, set its text to trucated version of thr taskString and set its background color using the rgb values stored in the task
+            
+            
+            
+            
+        }
         
-        //TODO: fix error when moving from March 2021 to Feb 2021. Out of range on this line.
-        let date = Calendar.current.dateComponents([.day, .year, .month], from: monthList[indexPath.row])
-        let dayString = date.day?.formatted()
-        
-        cell.dayLabel.text = dayString
-        
-        //TODO: if date is in the notificationList, show the notificationLabels for each notification present up to five. notiificationLabel should be the task color
-        
-        //loop through the dates with notifications and see how many (if any) are the date of the cell
-        
-        //use this count to obtain the tasks for the day
-        
-        //for the first 3? 5? tasks for the day, make a notification label visible, set its text to trucated version of thr taskString and set its background color using the rgb values stored in the task
-        
-        
-        
+    
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return monthList.count
+        //days in month + day of week labels
+        let length = monthList.count + 7
+        
+        return length
         
     }
+
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 

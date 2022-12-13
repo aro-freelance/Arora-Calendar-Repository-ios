@@ -90,6 +90,8 @@ class WriteNoteViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //self.navigationItem.setHidesBackButton(true, animated: true)
+        
         categoryPicker.dataSource = self
         categoryPicker.delegate = self
 

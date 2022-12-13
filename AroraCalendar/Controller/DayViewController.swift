@@ -102,6 +102,8 @@ class DayViewController: UIViewController, UIImagePickerControllerDelegate, UINa
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.setHidesBackButton(true, animated: true)
+        
         tableView.delegate = self
         tableView.dataSource = self
         categoryPicker.delegate = self
