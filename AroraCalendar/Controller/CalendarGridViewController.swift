@@ -538,6 +538,9 @@ class CalendarGridViewController: UIViewController, UICollectionViewDelegate, UI
             default:
                 print("Error: CollectionView setting up first row of 7 with Day of week labels. Received index of of range.")
             }
+            
+            cell.backgroundColor = .black
+            cell.dayLabel.textColor = .white
 
         }
         //after the first row, implement calendar grid
